@@ -1,0 +1,2123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Noche de Tortugas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night-deep:#081522;
+    --night-mid:#0d2438;
+    --sea-teal:#0f3d4a;
+    --sea-glow:#1c6b73;
+    --sand:#e3c592;
+    --sand-shadow:#b9925c;
+    --sand-dark:#8a6a3f;
+    --moon:#fdf3d8;
+    --moon-soft:#f4e4b8;
+    --coral:#ff6f52;
+    --coral-dark:#d94f36;
+    --bio:#57ffc9;
+    --bio-dim:#2fae8d;
+    --gold:#ffd166;
+    --ink:#f4ecda;
+    --ink-dim:#b8c4c9;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none;}
+  html,body{height:100%; margin:0; overflow:hidden; background:var(--night-deep); font-family:'Nunito',sans-serif;}
+  #stage{position:relative; width:100vw; height:100vh; height:100dvh; overflow:hidden; touch-action:none;}
+
+  /* ---------- SKY / SEA / SAND (polished cartoon style) ---------- */
+  #sky{position:absolute; inset:0; background:linear-gradient(180deg, #0a1f33 0%, #123a4f 55%, #175467 100%);}
+  #moon{position:absolute; top:6%; right:12%; width:60px; height:60px; border-radius:50%;
+      background:radial-gradient(circle at 38% 32%, #fffdf0 0%, var(--moon) 55%, var(--moon-soft) 100%);
+      border:3px solid #1b3a4a; box-shadow:0 0 34px 10px rgba(253,243,216,.28);
+  }
+  #moon::before{content:''; position:absolute; top:14px; left:9px; width:11px; height:11px; border-radius:50%; background:var(--moon-soft); opacity:.75;}
+  #moon::after{content:''; position:absolute; bottom:9px; right:11px; width:7px; height:7px; border-radius:50%; background:var(--moon-soft); opacity:.75;}
+  .star{position:absolute; width:3px; height:3px; background:#fff; border-radius:50%; opacity:.8; animation:twinkle 3s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:.25} 50%{opacity:1}}
+  @keyframes spin{0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)}}
+  /* aletas delanteras: golpe rápido hacia abajo, vuelta lenta, como al nadar de verdad */
+  @keyframes legBabyA{0%{transform:rotate(10deg)} 30%{transform:rotate(48deg)} 100%{transform:rotate(10deg)}}
+  @keyframes legBabyC{0%{transform:rotate(-20deg)} 30%{transform:rotate(-58deg)} 100%{transform:rotate(-20deg)}}
+  /* aletas traseras: timón, menos recorrido, ligero retraso respecto a las delanteras */
+  @keyframes legBabyB{0%{transform:rotate(-32deg)} 30%{transform:rotate(-16deg)} 100%{transform:rotate(-32deg)}}
+  @keyframes legBabyD{0%{transform:rotate(20deg)} 30%{transform:rotate(6deg)} 100%{transform:rotate(20deg)}}
+  @keyframes legMotherA{0%{transform:rotate(14deg)} 30%{transform:rotate(52deg)} 100%{transform:rotate(14deg)}}
+  @keyframes legMotherC{0%{transform:rotate(-25deg)} 30%{transform:rotate(-63deg)} 100%{transform:rotate(-25deg)}}
+  @keyframes legMotherB{0%{transform:rotate(-38deg)} 30%{transform:rotate(-22deg)} 100%{transform:rotate(-38deg)}}
+  @keyframes legMotherD{0%{transform:rotate(24deg)} 30%{transform:rotate(10deg)} 100%{transform:rotate(24deg)}}
+  .leg-baby-a{animation:legBabyA .55s cubic-bezier(.45,0,.2,1) infinite;}
+  .leg-baby-c{animation:legBabyC .55s cubic-bezier(.45,0,.2,1) infinite;}
+  .leg-baby-b{animation:legBabyB .55s cubic-bezier(.45,0,.2,1) infinite .12s;}
+  .leg-baby-d{animation:legBabyD .55s cubic-bezier(.45,0,.2,1) infinite .12s;}
+  .leg-mother-a{animation:legMotherA .7s cubic-bezier(.45,0,.2,1) infinite;}
+  .leg-mother-c{animation:legMotherC .7s cubic-bezier(.45,0,.2,1) infinite;}
+  .leg-mother-b{animation:legMotherB .7s cubic-bezier(.45,0,.2,1) infinite .15s;}
+  .leg-mother-d{animation:legMotherD .7s cubic-bezier(.45,0,.2,1) infinite .15s;}
+  @keyframes rainFall{0%{background-position:0 0;} 100%{background-position:-40px 60px;}}
+
+  #sea{position:absolute; left:0; right:0; top:0; height:36%; overflow:hidden;
+      background:linear-gradient(180deg, #0d3244 0%, #124a5c 40%, #1a6478 78%, #2c8291 100%);
+  }
+  #moonpath{display:none;}
+  .wave{position:absolute; left:-10%; width:120%; height:16px;
+      background:linear-gradient(180deg, rgba(255,255,255,.85), rgba(140,220,210,.35) 70%, transparent);
+      border-radius:0;
+      -webkit-mask-image:radial-gradient(circle 9px at 9px 2px, black 8px, transparent 9px);
+      mask-image:radial-gradient(circle 9px at 9px 2px, black 8px, transparent 9px);
+      -webkit-mask-size:18px 18px; mask-size:18px 18px; mask-repeat:repeat-x;
+      animation:washup 2.8s ease-in-out infinite;
+  }
+  @keyframes washup{
+      0%{transform:translateY(0); opacity:.95}
+      50%{transform:translateY(7px); opacity:.55}
+      100%{transform:translateY(0); opacity:.95}
+  }
+  .foamline{position:absolute; left:0; right:0; height:6px; bottom:-3px;
+      background:linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,0));
+  }
+
+  #sand{position:absolute; left:0; right:0; bottom:0; top:34%; background:
+      linear-gradient(180deg, #ead9ab 0%, var(--sand) 12%, var(--sand) 62%, var(--sand-shadow) 100%);
+  }
+  #sand::before{content:''; position:absolute; inset:0; opacity:.3; background-image:
+      radial-gradient(circle, rgba(138,106,63,.4) 2px, transparent 2.2px);
+      background-size:26px 26px;
+  }
+  #sand.road::before{
+      opacity:1;
+      background-image:
+        repeating-linear-gradient(90deg, #f4d54c 0 34px, transparent 34px 60px),
+        linear-gradient(180deg, #4a4d52 0%, #35373a 100%);
+      background-position: 0 42%, 0 0;
+      background-size: 100% 6px, 100% 100%;
+      background-repeat: repeat-x, no-repeat;
+  }
+  #sand.road::after{content:''; position:absolute; left:0; right:0; top:0; height:14px;
+      background:repeating-linear-gradient(90deg, #cfcfcf 0 18px, #9a9a9a 18px 22px);
+      border-bottom:3px solid #6b6b6b;
+  }
+
+  /* ---------- PISCINA ---------- */
+  #sea.pool{overflow:hidden;}
+  #sea.pool::before{content:''; position:absolute; inset:0;
+      background:
+        repeating-linear-gradient(115deg, rgba(255,255,255,.10) 0 3px, transparent 3px 46px),
+        repeating-linear-gradient(65deg, rgba(255,255,255,.08) 0 2px, transparent 2px 38px);
+      animation:shimmer 3.5s linear infinite;
+  }
+  @keyframes shimmer{0%{background-position:0 0, 0 0} 100%{background-position:120px 60px, -100px 80px}}
+  #sea.pool::after{content:''; position:absolute; left:0; right:0; bottom:0; height:16px; z-index:2;
+      background:repeating-linear-gradient(90deg, #f4f4f4 0 20px, #2e7ba3 20px 24px);
+      border-top:3px solid #ffffffcc;
+  }
+  #sand.pool{background:repeating-linear-gradient(90deg, #eef3f3 0 26px, #d7e2e2 26px 28px),
+      repeating-linear-gradient(0deg, #eef3f3 0 26px, #d7e2e2 26px 28px) !important;}
+  #sand.pool::before{opacity:0;}
+  #sand.pool::after{content:''; position:absolute; left:0; right:0; top:0; height:10px;
+      background:repeating-linear-gradient(90deg, #ff6f52 0 22px, #f4f4f4 22px 44px);
+      border-bottom:2px solid #cfd8d8;
+  }
+  #sea.pool #moonpath, #sea.pool #shoreline{display:none;}
+
+  /* ---------- BAJO LA ARENA ---------- */
+  #sand.sandy::before{
+      opacity:.5;
+      background-image:
+        repeating-radial-gradient(ellipse 60px 10px at 30% 20%, rgba(160,120,60,.35) 0 2px, transparent 2px 40px),
+        repeating-radial-gradient(ellipse 50px 8px at 70% 60%, rgba(160,120,60,.3) 0 2px, transparent 2px 36px);
+      background-size:100% 100%;
+  }
+  #sand.sandy::after{content:''; position:absolute; inset:0; pointer-events:none; opacity:.4;
+      background-image: repeating-linear-gradient(95deg, rgba(255,255,255,.12) 0 2px, transparent 2px 30px);
+  }
+
+  /* ---------- EL JARDÍN ---------- */
+  #sand.garden::before{
+      opacity:.55;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(20,60,25,.35) 0 2px, transparent 2px 9px),
+        repeating-linear-gradient(4deg, rgba(20,60,25,.25) 0 2px, transparent 2px 11px);
+      background-size:100% 100%;
+  }
+  #sand.garden::after{content:''; position:absolute; left:0; right:0; top:0; height:12px;
+      background:repeating-linear-gradient(90deg, #6b4a2c 0 26px, #5a3d24 26px 30px);
+      border-bottom:2px solid #3f2b18;
+  }
+
+  /* ---------- SUPERMERCADO ---------- */
+  #sand.market::before{
+      opacity:.5;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(180,180,180,.4) 0 1px, transparent 1px 34px),
+        repeating-linear-gradient(90deg, rgba(180,180,180,.4) 0 1px, transparent 1px 34px);
+      background-size:100% 100%;
+  }
+  #sand.market::after{content:''; position:absolute; left:0; right:0; top:0; height:16px;
+      background:repeating-linear-gradient(90deg, #e23b3b 0 24px, #f4f4f4 24px 48px);
+      border-bottom:3px solid #9a9a9a;
+  }
+
+  /* ---------- CAMPO DE FÚTBOL ---------- */
+  #sand.field::before{
+      opacity:1;
+      background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0) 0 44px, rgba(0,0,0,.06) 44px 88px);
+      background-size:100% 100%;
+  }
+  #sand.field::after{content:''; position:absolute; left:0; right:0; top:0; height:3px; background:#fff; opacity:.85; z-index:1;}
+
+  /* ---------- EL RÍO ---------- */
+  #sand.riverbank::before{
+      opacity:.5;
+      background-image: repeating-radial-gradient(ellipse 30px 8px at 50% 0%, rgba(255,255,255,.25) 0 2px, transparent 2px 22px);
+      background-size:70px 26px;
+  }
+  #sand.riverbank::after{content:''; position:absolute; left:0; right:0; top:0; height:10px;
+      background:repeating-linear-gradient(90deg, #7fbfd4 0 16px, #bfe0ea 16px 32px);
+      opacity:.7;
+  }
+  #sand.grass::before{
+      opacity:.5;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(20,60,25,.35) 0 2px, transparent 2px 9px),
+        repeating-linear-gradient(4deg, rgba(20,60,25,.25) 0 2px, transparent 2px 11px);
+      background-size:100% 100%;
+  }
+  #sand.grass::after{content:''; position:absolute; left:0; right:0; top:0; height:10px;
+      background:repeating-linear-gradient(90deg, #7fbfd4 0 16px, #bfe0ea 16px 32px);
+      opacity:.7;
+  }
+  #sand.forest::before{opacity:0;}
+  #sand.ice::before{
+      opacity:.6;
+      background-image:
+        repeating-linear-gradient(115deg, rgba(255,255,255,.5) 0 2px, transparent 2px 40px),
+        repeating-linear-gradient(25deg, rgba(160,200,220,.35) 0 2px, transparent 2px 46px);
+      background-size:100% 100%;
+  }
+  #sand.ice::after{content:''; position:absolute; left:0; right:0; top:0; height:8px;
+      background:linear-gradient(180deg, #ffffffcc, transparent);
+  }
+
+  #shoreline{position:absolute; left:0; right:0; top:-8px; height:20px; z-index:2; pointer-events:none;
+      background:linear-gradient(180deg, rgba(255,255,255,.65), rgba(255,255,255,0));
+      -webkit-mask-image:radial-gradient(circle 12px at 12px 0, black 10px, transparent 11px);
+      mask-image:radial-gradient(circle 12px at 12px 0, black 10px, transparent 11px);
+      -webkit-mask-size:24px 20px; mask-size:24px 20px; mask-repeat:repeat-x;
+      animation:washup 2.8s ease-in-out infinite;
+  }
+
+  .rock{position:absolute; pointer-events:none;}
+
+  .nest{position:absolute; width:46px; height:20px; border-radius:50%;
+      background:radial-gradient(ellipse at center, rgba(74,52,26,.55), rgba(74,52,26,0) 75%);
+      pointer-events:none;
+  }
+
+  /* ---------- HUD ---------- */
+  #hud{position:absolute; top:0; left:0; right:0; padding:14px 16px 0; display:flex; justify-content:space-between; align-items:flex-start; z-index:20; pointer-events:none;}
+  .pill{background:rgba(8,21,34,.55); backdrop-filter:blur(6px); border:1px solid rgba(244,236,218,.18);
+      border-radius:16px; padding:8px 14px; color:var(--ink); font-family:'Baloo 2',sans-serif;}
+  #scoreWrap{display:flex; flex-direction:column; gap:2px;}
+  #scoreLabel{font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-dim); font-family:'Nunito'; font-weight:700;}
+  #score{font-size:26px; font-weight:800; color:var(--gold); text-shadow:0 0 12px rgba(255,209,102,.5);}
+  #timeWrap{text-align:right;}
+  #time{font-size:22px; font-weight:800;}
+  #time.low{color:var(--coral); animation:pulse .6s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+
+  #combo{position:absolute; top:70px; left:50%; transform:translateX(-50%); font-family:'Baloo 2';
+      color:var(--bio); font-size:14px; font-weight:700; opacity:0; text-shadow:0 0 10px rgba(87,255,201,.6); z-index:20; pointer-events:none;}
+
+  /* ---------- CRITTERS ---------- */
+  .baby, .mother{position:absolute; cursor:pointer; will-change:transform;}
+  .baby svg, .mother svg{display:block; filter:drop-shadow(0 3px 4px rgba(0,0,0,.35));}
+  .baby{width:40px; height:40px; touch-action:none;}
+  .baby.gold{filter:drop-shadow(0 0 8px rgba(255,209,102,.85));}
+  .mother{width:94px; height:94px; z-index:15;}
+  .catch-pop{position:absolute; pointer-events:none; font-family:'Baloo 2'; font-weight:800; font-size:20px; color:var(--gold); text-shadow:0 0 8px rgba(0,0,0,.4); animation:popUp .7s ease-out forwards; z-index:25;}
+  @keyframes popUp{0%{transform:translateY(0) scale(.6); opacity:0} 20%{opacity:1; transform:translateY(-6px) scale(1.1)} 100%{transform:translateY(-46px) scale(1); opacity:0}}
+  .bite-pop{color:var(--coral) !important;}
+  .sparkle{position:absolute; pointer-events:none; z-index:24; animation:sparkleOut .5s ease-out forwards;}
+  @keyframes sparkleOut{0%{transform:scale(0.3); opacity:1}100%{transform:scale(1.6); opacity:0}}
+
+  /* ---------- START / GAMEOVER OVERLAYS ---------- */
+  .overlay{position:absolute; inset:0; z-index:50; display:flex; align-items:center; justify-content:center;
+      background:radial-gradient(ellipse at 50% 30%, rgba(20,61,74,.9), rgba(8,21,34,.96));
+      flex-direction:column; text-align:center; padding:24px;}
+  .overlay.hidden{display:none;}
+  .title{font-family:'Baloo 2'; font-weight:800; font-size:38px; color:var(--ink); margin:0 0 6px;
+      text-shadow:0 0 20px rgba(87,255,201,.35);}
+  .title span{color:var(--bio);}
+  .subtitle{color:var(--ink-dim); font-size:15px; margin-bottom:28px; max-width:280px; line-height:1.5;}
+  .btn{font-family:'Baloo 2'; font-weight:700; font-size:18px; color:var(--night-deep); background:linear-gradient(180deg, var(--gold), #f0a83a);
+      border:none; border-radius:999px; padding:14px 38px; box-shadow:0 6px 0 #b5791f, 0 10px 20px rgba(0,0,0,.35); cursor:pointer;}
+  .btn:active{transform:translateY(4px); box-shadow:0 2px 0 #b5791f;}
+  .btn.ghost{background:transparent; color:var(--ink); border:2px solid rgba(244,236,218,.4); box-shadow:none; margin-top:12px; padding:10px 30px; font-size:14px;}
+  .finalScore{font-family:'Baloo 2'; font-size:52px; font-weight:800; color:var(--gold); margin:6px 0 2px; text-shadow:0 0 20px rgba(255,209,102,.5);}
+
+  /* ---------- ROULETTE MODAL ---------- */
+  #rouletteOverlay{position:absolute; inset:0; z-index:60; display:flex; align-items:center; justify-content:center;
+      background:rgba(5,12,20,.88); backdrop-filter:blur(3px);}
+  #rouletteOverlay.hidden{display:none;}
+  .rTitle{font-family:'Baloo 2'; color:var(--bio); font-size:22px; font-weight:700; margin-bottom:4px; text-shadow:0 0 14px rgba(87,255,201,.5);}
+  .rSub{color:var(--ink-dim); font-size:13px; margin-bottom:18px;}
+  #wheelWrap{position:relative; width:260px; height:260px;}
+  #wheel{width:100%; height:100%; border-radius:50%; position:relative; overflow:hidden;
+      box-shadow:0 0 0 6px var(--night-mid), 0 0 0 9px rgba(255,209,102,.5), 0 10px 40px rgba(0,0,0,.5);
+      transition:transform 4.2s cubic-bezier(.12,.75,.15,1);}
+  .seg{position:absolute; width:50%; height:50%; top:0; left:50%; transform-origin:0% 100%;}
+  .segLabel{position:absolute; top:14px; left:50%; transform-origin:0 130px; font-family:'Baloo 2'; font-weight:700; font-size:12px; color:#08152299;}
+  #pointer{position:absolute; top:-14px; left:50%; transform:translateX(-50%); width:0; height:0;
+      border-left:12px solid transparent; border-right:12px solid transparent; border-top:20px solid var(--coral); z-index:5; filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));}
+  #hub{position:absolute; top:50%; left:50%; width:46px; height:46px; transform:translate(-50%,-50%); border-radius:50%;
+      background:radial-gradient(circle at 35% 35%, #fff7e0, var(--gold)); box-shadow:0 0 0 4px var(--night-mid), 0 4px 10px rgba(0,0,0,.4); z-index:4;}
+  #spinBtn{margin-top:22px;}
+  #spinsLeft{font-family:'Baloo 2'; color:var(--gold); font-weight:700; margin-top:10px; font-size:14px;}
+  #prizeToast{margin-top:14px; font-family:'Baloo 2'; font-size:19px; font-weight:800; color:var(--bio); min-height:26px; text-shadow:0 0 10px rgba(87,255,201,.5);}
+
+  /* ---------- WALLET ---------- */
+
+  /* ---------- LEVEL SELECT ---------- */
+  #levelGrid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; width:min(92%,380px);
+      max-height:52vh; overflow-y:auto; padding:4px; -webkit-overflow-scrolling:touch;}
+  .levelCard{border-radius:12px; padding:8px 4px; border:2px solid rgba(244,236,218,.25); cursor:pointer;
+      display:flex; flex-direction:column; align-items:center; gap:2px; transition:transform .12s;}
+  .levelCard:active{transform:scale(.96);}
+  .levelCard .lIcon{font-size:20px;}
+  .levelCard .lName{font-family:'Baloo 2'; font-weight:700; font-size:10px; color:var(--ink); text-align:center; line-height:1.1;}
+  .levelCard.locked{opacity:.45; filter:grayscale(.6);}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="sky">
+    <div id="moon"></div>
+  </div>
+  <div id="sea">
+    <div id="moonpath"></div>
+    <div id="shoreline"></div>
+  </div>
+  <div id="sand"></div>
+
+  <div id="hud">
+    <div class="pill" id="scoreWrap">
+      <span id="scoreLabel">Puntos</span>
+      <span id="score">0</span>
+    </div>
+    <div class="pill" id="timeWrap">
+      <span id="time">60</span>
+    </div>
+  </div>
+  <button id="soundToggle" class="pill" style="position:absolute; top:14px; left:50%; transform:translateX(-50%); z-index:21; border:none; cursor:pointer; font-size:16px; padding:8px 12px; pointer-events:auto;">🔊</button>
+  <div id="combo"></div>
+
+  <!-- LEVEL SELECT -->
+  <div class="overlay" id="levelSelectOverlay">
+    <div class="title" style="font-size:28px;">Elige tu <span>escenario</span></div>
+    <div class="subtitle" style="margin-bottom:6px;">Cada sitio tiene sus tortuguitas y su propio peligro que esquivar.</div>
+    <div id="streakNotice" style="max-width:280px; margin-bottom:10px; font-family:'Baloo 2'; font-size:14px; color:var(--bio); font-weight:700; text-align:center; text-shadow:0 0 10px rgba(87,255,201,.4);"></div>
+    <div id="levelGrid"></div>
+    <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; justify-content:center;">
+      <button class="btn ghost" id="openAlbumBtn" style="font-size:12px; padding:8px 20px;">📖 Álbum</button>
+      <button class="btn ghost" id="openHighscoreBtn" style="font-size:12px; padding:8px 20px;">🏆 Puntuaciones</button>
+      <button class="btn ghost" id="resetGameBtn" style="font-size:12px; padding:8px 20px;">Reiniciar juego entero</button>
+    </div>
+  </div>
+
+  <!-- ÁLBUM -->
+  <div class="overlay hidden" id="albumOverlay">
+    <div class="title" style="font-size:24px;">Álbum de <span>tortuguitas</span></div>
+    <div id="albumProgress" style="font-family:'Baloo 2'; color:var(--gold); font-weight:700; margin-bottom:12px;"></div>
+    <div id="albumGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; width:min(92%,340px); max-height:52vh; overflow-y:auto; padding:4px;"></div>
+    <button class="btn" id="closeAlbumBtn" style="margin-top:16px;">Cerrar</button>
+  </div>
+
+  <!-- START -->
+  <div class="overlay hidden" id="startOverlay">
+    <div class="title" id="startTitle">Noche de <span>Tortugas</span></div>
+    <div class="subtitle" id="startSubtitle">Toca las tortuguitas antes de que lleguen al mar. Cuidado con las madres: ¡si tocas una, pierdes puntos! Atrapa una tortuguita dorada o roja para conseguir puntos extra.</div>
+    <div id="adNotice" class="hidden" style="max-width:280px; margin:-6px 0 16px; padding:10px 14px; border-radius:12px;
+        background:rgba(255,209,102,.12); border:1px solid rgba(255,209,102,.4); font-family:'Nunito'; font-size:12.5px; color:var(--gold); font-weight:700; text-align:center;">
+      📢 Este juego incluye publicidad de vez en cuando.
+    </div>
+    <button class="btn" id="startBtn">Empezar a jugar</button>
+    <button class="btn ghost" id="backToLevelsBtn">Elegir otro escenario</button>
+  </div>
+
+  <!-- GAME OVER -->
+  <div class="overlay hidden" id="overOverlay">
+    <div class="subtitle" style="margin-bottom:4px;">Puntuación final</div>
+    <div class="finalScore" id="finalScore">0</div>
+    <button class="btn" id="restartBtn" style="margin-top:18px;">Jugar otra vez</button>
+  </div>
+
+  <!-- HIGHSCORE: introducir nombre -->
+  <div class="overlay hidden" id="highscoreEntryOverlay">
+    <div class="title" style="font-size:26px;">¡Top <span>puntuación</span>!</div>
+    <div class="subtitle" style="margin-bottom:6px;">Has entrado en el marcador de los mejores</div>
+    <div class="finalScore" id="hsEntryScore" style="font-size:40px; margin-bottom:16px;">0</div>
+    <input id="hsNameInput" maxlength="12" placeholder="Tu nombre" style="font-family:'Baloo 2'; font-size:18px; font-weight:700; text-align:center;
+      padding:12px 20px; border-radius:14px; border:2px solid rgba(244,236,218,.4); background:rgba(8,21,34,.5); color:var(--ink); width:min(80%,220px); margin-bottom:16px;">
+    <button class="btn" id="hsSaveBtn">Guardar</button>
+  </div>
+
+  <!-- HIGHSCORE: tabla -->
+  <div class="overlay hidden" id="highscoreListOverlay">
+    <div class="title" style="font-size:26px;">Mejores <span>puntuaciones</span></div>
+    <div id="highscoreTable" style="width:min(88%,320px); margin:10px 0 18px; display:flex; flex-direction:column; gap:8px;"></div>
+    <button class="btn ghost" id="closeHighscoreBtn">Cerrar</button>
+  </div>
+
+  <!-- ROULETTE -->
+  <div id="rouletteOverlay" class="overlay hidden">
+    <div class="rTitle">🐢 ¡Tortuguita dorada!</div>
+    <div class="rSub" id="rSub">Gira la ruleta de la luna</div>
+    <div id="wheelWrap">
+      <div id="pointer"></div>
+      <div id="wheel"></div>
+      <div id="hub"></div>
+    </div>
+    <button class="btn" id="spinBtn">Girar</button>
+    <div id="spinsLeft"></div>
+    <div id="prizeToast"></div>
+    <button class="btn ghost hidden" id="closeRouletteBtn">Continuar</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const stage = document.getElementById('stage');
+  const sky = document.getElementById('sky');
+  const sea = document.getElementById('sea');
+  const sand = document.getElementById('sand');
+  const scoreEl = document.getElementById('score');
+  const timeEl = document.getElementById('time');
+  const comboEl = document.getElementById('combo');
+
+  // ---------- decorative stars & waves ----------
+  for(let i=0;i<40;i++){
+    const s=document.createElement('div'); s.className='star';
+    s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*40+'%';
+    s.style.animationDelay=(Math.random()*3)+'s';
+    sky.appendChild(s);
+  }
+  for(let i=0;i<3;i++){
+    const w=document.createElement('div'); w.className='wave';
+    w.style.top=(20+i*5)+'%'; w.style.animationDelay=(i*0.6)+'s';
+    sea.appendChild(w);
+  }
+
+  // ---------- nests (fixed spots on sand) ----------
+  const nestSpots = [
+    {x:14,y:18},{x:32,y:38},{x:50,y:14},{x:68,y:40},{x:85,y:20},
+    {x:22,y:60},{x:60,y:64},{x:78,y:58},{x:40,y:75}
+  ];
+  nestSpots.forEach(n=>{
+    const el=document.createElement('div'); el.className='nest';
+    el.style.left=n.x+'%'; el.style.top=`calc(34% + ${n.y}% * 0.62)`;
+    sand.appendChild(el);
+  });
+
+  // ---------- rocks (decorative, se ocultan en niveles con piscina) ----------
+  function rockSVG(w,h,tone){
+    const ink='#0d2a20';
+    return `<svg viewBox="0 0 100 60" width="${w}" height="${h}">
+      <path d="M6 55 Q0 30 20 18 Q30 4 50 8 Q72 2 86 20 Q100 30 94 48 Q96 58 84 58 L14 58 Q4 58 6 55 Z"
+        fill="${tone}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M24 50 Q30 30 46 26" stroke="${ink}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".5"/>
+      <ellipse cx="34" cy="18" rx="10" ry="6" fill="#ffffff40"/>
+    </svg>`;
+  }
+  const rockSpots = [
+    {x:6, y:48, w:64, h:40, tone:'#9a9382'},
+    {x:90, y:66, w:56, h:34, tone:'#a3a08c'},
+    {x:48, y:88, w:44, h:28, tone:'#8b8674'}
+  ];
+  const rocksLayer = document.createElement('div');
+  rocksLayer.id='rocksLayer';
+  rockSpots.forEach(r=>{
+    const el=document.createElement('div'); el.className='rock';
+    el.style.position='absolute';
+    el.style.left=r.x+'%'; el.style.top=`calc(34% + ${r.y}% * 0.62)`;
+    el.style.transform='translate(-10%,-70%)';
+    el.innerHTML=rockSVG(r.w,r.h,r.tone);
+    rocksLayer.appendChild(el);
+  });
+  sand.appendChild(rocksLayer);
+
+  // ---------- decorados de piscina ----------
+  function loungerCoupleSVG(){
+    const wood='#c9924f', woodDark='#a06f34', ink='#123329', towel1='#ff8a6a', towel1b='#ffb199', towel2='#57c2ff', towel2b='#a3ddff',
+      skin='#e8b98a', skinShade='#d6a172', trunk='#2b6e56', bikini='#e0537a', hair1='#3a2a1f', hair2='#7a4a2c', glass='#2a2a2a';
+    return `<svg viewBox="0 0 280 130" width="220" height="102">
+      <g transform="translate(0,4)">
+        <ellipse cx="55" cy="112" rx="58" ry="8" fill="#00000022"/>
+        <rect x="4" y="68" width="108" height="12" rx="3" fill="${wood}" stroke="${ink}" stroke-width="3"/>
+        <path d="M8 68 L26 14 L38 14 L26 68 Z" fill="${woodDark}" stroke="${ink}" stroke-width="3"/>
+        <rect x="8" y="50" width="96" height="18" rx="2" fill="${towel1}" stroke="${ink}" stroke-width="2.5"/>
+        <rect x="8" y="50" width="96" height="6" fill="${towel1b}"/>
+        <ellipse cx="72" cy="46" rx="34" ry="13" fill="${skin}" stroke="${ink}" stroke-width="2.5"/>
+        <ellipse cx="72" cy="49" rx="30" ry="6" fill="${skinShade}" opacity=".5"/>
+        <rect x="42" y="38" width="58" height="16" rx="8" fill="${trunk}" stroke="${ink}" stroke-width="2.5"/>
+        <path d="M100 44 Q112 40 118 48" stroke="${skin}" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <path d="M44 44 Q34 38 30 46" stroke="${skin}" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <circle cx="26" cy="42" r="13" fill="${skin}" stroke="${ink}" stroke-width="2.5"/>
+        <path d="M14 34 Q26 20 40 32 Q42 24 26 20 Q10 22 14 34" fill="${hair1}"/>
+        <rect x="17" y="38" width="18" height="6" rx="3" fill="${glass}" stroke="${ink}" stroke-width="1.5"/>
+      </g>
+      <g transform="translate(150,4)">
+        <ellipse cx="55" cy="112" rx="58" ry="8" fill="#00000022"/>
+        <rect x="4" y="68" width="108" height="12" rx="3" fill="${wood}" stroke="${ink}" stroke-width="3"/>
+        <path d="M8 68 L26 14 L38 14 L26 68 Z" fill="${woodDark}" stroke="${ink}" stroke-width="3"/>
+        <rect x="8" y="50" width="96" height="18" rx="2" fill="${towel2}" stroke="${ink}" stroke-width="2.5"/>
+        <rect x="8" y="50" width="96" height="6" fill="${towel2b}"/>
+        <ellipse cx="72" cy="46" rx="34" ry="13" fill="${skin}" stroke="${ink}" stroke-width="2.5"/>
+        <ellipse cx="72" cy="49" rx="30" ry="6" fill="${skinShade}" opacity=".5"/>
+        <rect x="52" y="39" width="16" height="12" rx="4" fill="${bikini}"/>
+        <rect x="76" y="39" width="20" height="12" rx="4" fill="${bikini}"/>
+        <path d="M100 44 Q112 40 118 48" stroke="${skin}" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <path d="M44 44 Q34 38 30 46" stroke="${skin}" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <circle cx="26" cy="42" r="13" fill="${skin}" stroke="${ink}" stroke-width="2.5"/>
+        <path d="M12 42 Q10 20 30 22 Q42 24 34 44 Q30 30 12 42" fill="${hair2}"/>
+        <rect x="17" y="38" width="18" height="6" rx="3" fill="${glass}" stroke="${ink}" stroke-width="1.5"/>
+      </g>
+    </svg>`;
+  }
+  function poolBarSVG(){
+    const wood='#8a5a3a', woodDark='#6e4529', ink='#123329', top='#c9924f', skin='#e0a878', shirt='#f4f4f4', apron='#3a3a3a', hair='#2b1f18';
+    return `<svg viewBox="0 0 200 150" width="150" height="112">
+      <ellipse cx="90" cy="140" rx="80" ry="8" fill="#00000022"/>
+      <rect x="6" y="76" width="170" height="52" fill="${wood}" stroke="${ink}" stroke-width="4"/>
+      <rect x="6" y="76" width="170" height="10" fill="${woodDark}"/>
+      <rect x="0" y="66" width="182" height="16" rx="4" fill="${top}" stroke="${ink}" stroke-width="4"/>
+      <rect x="18" y="88" width="12" height="30" fill="#8ec6e8" stroke="${ink}" stroke-width="2"/>
+      <rect x="36" y="94" width="10" height="24" fill="#e0537a" stroke="${ink}" stroke-width="2"/>
+      <rect x="52" y="90" width="11" height="28" fill="#f4d54c" stroke="${ink}" stroke-width="2"/>
+      <rect x="68" y="96" width="10" height="22" fill="#8fd6a6" stroke="${ink}" stroke-width="2"/>
+      <ellipse cx="118" cy="42" rx="20" ry="22" fill="${skin}" stroke="${ink}" stroke-width="3"/>
+      <path d="M98 30 Q118 8 138 30 Q140 18 118 14 Q96 18 98 30Z" fill="${hair}"/>
+      <rect x="96" y="60" width="44" height="32" rx="6" fill="${shirt}" stroke="${ink}" stroke-width="3"/>
+      <path d="M104 66 L132 66 L127 92 L109 92 Z" fill="${apron}"/>
+      <path d="M144 66 Q158 62 162 76" stroke="${skin}" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <circle cx="164" cy="78" r="6" fill="#f4d54c" stroke="${ink}" stroke-width="2"/>
+      <circle cx="110" cy="40" r="2.4" fill="${ink}"/><circle cx="126" cy="40" r="2.4" fill="${ink}"/>
+      <path d="M108 50 Q118 55 128 50" stroke="${ink}" stroke-width="2" fill="none"/>
+    </svg>`;
+  }
+  const poolDecor = document.createElement('div');
+  poolDecor.id='poolDecor';
+  poolDecor.style.display='none';
+  const loungerEl = document.createElement('div');
+  loungerEl.style.position='absolute'; loungerEl.style.left='2%'; loungerEl.style.top='calc(34% + 88% * 0.62)';
+  loungerEl.style.transform='translate(0,-100%)'; loungerEl.style.pointerEvents='none';
+  loungerEl.innerHTML=loungerCoupleSVG();
+  const barEl = document.createElement('div');
+  barEl.style.position='absolute'; barEl.style.right='0%'; barEl.style.top='calc(34% + 2% * 0.62)';
+  barEl.style.transform='translate(0,-6%)'; barEl.style.pointerEvents='none';
+  barEl.innerHTML=poolBarSVG();
+  poolDecor.appendChild(loungerEl);
+  poolDecor.appendChild(barEl);
+  sand.appendChild(poolDecor);
+
+  // ---------- decorados "Bajo la arena" ----------
+  function shellSVG(color){
+    const ink='#5a3a1f';
+    return `<svg viewBox="0 0 60 50" width="30" height="26">
+      <path d="M30 6 C14 6 6 26 6 40 L54 40 C54 26 46 6 30 6 Z" fill="${color}" stroke="${ink}" stroke-width="2.5"/>
+      <path d="M30 10 L30 38 M18 14 L22 38 M42 14 L38 38" stroke="${ink}" stroke-width="1.6" opacity=".5" fill="none"/>
+    </svg>`;
+  }
+  function starfishSVG(color){
+    const ink='#7a3a1f';
+    return `<svg viewBox="0 0 60 60" width="30" height="30">
+      <path d="M30 2 L37 22 L58 22 L41 35 L47 56 L30 43 L13 56 L19 35 L2 22 L23 22 Z" fill="${color}" stroke="${ink}" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="24" cy="26" r="1.6" fill="${ink}"/><circle cx="36" cy="26" r="1.6" fill="${ink}"/><circle cx="30" cy="34" r="1.6" fill="${ink}"/>
+    </svg>`;
+  }
+  const sandDecor = document.createElement('div');
+  sandDecor.id='sandDecor';
+  sandDecor.style.display='none';
+  const sandDecorSpots = [
+    {x:10, y:26, svg:shellSVG('#ffd9c2')},
+    {x:80, y:20, svg:starfishSVG('#ff8a5c')},
+    {x:60, y:70, svg:shellSVG('#ffe4b3')},
+    {x:20, y:82, svg:starfishSVG('#f2a65a')},
+    {x:88, y:78, svg:shellSVG('#ffc9a3')}
+  ];
+  sandDecorSpots.forEach(s=>{
+    const el=document.createElement('div');
+    el.style.position='absolute'; el.style.left=s.x+'%'; el.style.top=`calc(34% + ${s.y}% * 0.62)`;
+    el.style.transform='translate(-50%,-50%)'; el.style.pointerEvents='none';
+    el.innerHTML=s.svg;
+    sandDecor.appendChild(el);
+  });
+  sand.appendChild(sandDecor);
+
+  // ---------- decorados "El Jardín" ----------
+  function flowerBedSVG(){
+    const ink='#123329';
+    return `<svg viewBox="0 0 90 40" width="60" height="26">
+      <ellipse cx="45" cy="30" rx="42" ry="9" fill="#5c3a22" stroke="${ink}" stroke-width="2.5"/>
+      <g>
+        <circle cx="20" cy="18" r="6" fill="#ff6f8f" stroke="${ink}" stroke-width="1.6"/>
+        <circle cx="38" cy="14" r="6" fill="#ffd93d" stroke="${ink}" stroke-width="1.6"/>
+        <circle cx="56" cy="18" r="6" fill="#ff8a5c" stroke="${ink}" stroke-width="1.6"/>
+        <circle cx="70" cy="14" r="6" fill="#c084fc" stroke="${ink}" stroke-width="1.6"/>
+        <circle cx="20" cy="18" r="2" fill="#fff6c9"/><circle cx="38" cy="14" r="2" fill="#fff6c9"/>
+        <circle cx="56" cy="18" r="2" fill="#fff6c9"/><circle cx="70" cy="14" r="2" fill="#fff6c9"/>
+      </g>
+    </svg>`;
+  }
+  const gardenDecor = document.createElement('div');
+  gardenDecor.id='gardenDecor';
+  gardenDecor.style.display='none';
+  const gardenSpots = [{x:12,y:24},{x:82,y:30},{x:50,y:82},{x:20,y:80}];
+  gardenSpots.forEach(s=>{
+    const el=document.createElement('div');
+    el.style.position='absolute'; el.style.left=s.x+'%'; el.style.top=`calc(34% + ${s.y}% * 0.62)`;
+    el.style.transform='translate(-50%,-60%)'; el.style.pointerEvents='none';
+    el.innerHTML=flowerBedSVG();
+    gardenDecor.appendChild(el);
+  });
+  sand.appendChild(gardenDecor);
+
+  // ---------- decorados "El Supermercado" ----------
+  function marketEntranceSVG(){
+    const ink='#123329';
+    return `<svg viewBox="0 0 300 90" width="240" height="72">
+      <rect x="0" y="0" width="300" height="60" fill="#c62828" stroke="${ink}" stroke-width="4"/>
+      <text x="150" y="38" font-family="Baloo 2, sans-serif" font-weight="800" font-size="26" fill="#fff" text-anchor="middle">SUPERMERCADO</text>
+      <rect x="20" y="60" width="120" height="30" fill="#bfe3ee" stroke="${ink}" stroke-width="3" opacity=".85"/>
+      <rect x="160" y="60" width="120" height="30" fill="#bfe3ee" stroke="${ink}" stroke-width="3" opacity=".85"/>
+      <line x1="80" y1="60" x2="80" y2="90" stroke="${ink}" stroke-width="2"/>
+      <line x1="220" y1="60" x2="220" y2="90" stroke="${ink}" stroke-width="2"/>
+    </svg>`;
+  }
+  const marketDecor = document.createElement('div');
+  marketDecor.id='marketDecor';
+  marketDecor.style.display='none';
+  marketDecor.style.position='absolute'; marketDecor.style.left='50%'; marketDecor.style.top='34%';
+  marketDecor.style.transform='translate(-50%,-92%)'; marketDecor.style.pointerEvents='none';
+  marketDecor.innerHTML=marketEntranceSVG();
+  sand.appendChild(marketDecor);
+
+  // ---------- decorados "Campo de Fútbol" ----------
+  function goalSVG(w,h){
+    const ink='#123329';
+    return `<svg viewBox="0 0 220 90" width="${w||180}" height="${h||74}">
+      <rect x="10" y="10" width="200" height="60" fill="none" stroke="#fff" stroke-width="6"/>
+      <path d="M10 10 L10 70 M210 10 L210 70" stroke="#fff" stroke-width="6"/>
+      <g stroke="#ffffffaa" stroke-width="1.4">
+        ${Array.from({length:10}).map((_,i)=>`<line x1="${10+i*20}" y1="10" x2="${10+i*20}" y2="70"/>`).join('')}
+        ${Array.from({length:6}).map((_,i)=>`<line x1="10" y1="${10+i*10}" x2="210" y2="${10+i*10}"/>`).join('')}
+      </g>
+    </svg>`;
+  }
+  const fieldDecor = document.createElement('div');
+  fieldDecor.id='fieldDecor';
+  fieldDecor.style.display='none';
+  const goalSpots = [
+    {x:50, y:2, w:180, h:74, top:true},
+    {x:10, y:55, w:110, h:46, top:false},
+    {x:90, y:55, w:110, h:46, top:false}
+  ];
+  goalSpots.forEach(g=>{
+    const el=document.createElement('div');
+    el.style.position='absolute'; el.style.left=g.x+'%';
+    el.style.top = g.top ? '34%' : `calc(34% + ${g.y}% * 0.62)`;
+    el.style.transform = g.top ? 'translate(-50%,-88%)' : 'translate(-50%,-50%)';
+    el.style.pointerEvents='none';
+    el.innerHTML = goalSVG(g.w,g.h);
+    fieldDecor.appendChild(el);
+  });
+  const centerCircle = document.createElement('div');
+  centerCircle.style.position='absolute'; centerCircle.style.left='50%'; centerCircle.style.top='calc(34% + 30% * 0.62)';
+  centerCircle.style.transform='translate(-50%,-50%)'; centerCircle.style.width='90px'; centerCircle.style.height='90px';
+  centerCircle.style.border='3px solid rgba(255,255,255,.85)'; centerCircle.style.borderRadius='50%'; centerCircle.style.pointerEvents='none';
+  fieldDecor.appendChild(centerCircle);
+  sand.appendChild(fieldDecor);
+
+  // ---------- decorados "El Bosque" ----------
+  function treeSVG(w,h){
+    const trunk='#5a3a1f', ink='#123329', leaf1='#1f5c34', leaf2='#276b3d';
+    return `<svg viewBox="0 0 70 100" width="${w}" height="${h}">
+      <rect x="30" y="60" width="10" height="34" fill="${trunk}" stroke="${ink}" stroke-width="2.5"/>
+      <ellipse cx="35" cy="34" rx="30" ry="26" fill="${leaf1}" stroke="${ink}" stroke-width="3"/>
+      <ellipse cx="22" cy="46" rx="20" ry="18" fill="${leaf2}" stroke="${ink}" stroke-width="3"/>
+      <ellipse cx="50" cy="46" rx="20" ry="18" fill="${leaf2}" stroke="${ink}" stroke-width="3"/>
+    </svg>`;
+  }
+  const forestDecor = document.createElement('div');
+  forestDecor.id='forestDecor';
+  forestDecor.style.display='none';
+  const treeSpots = [
+    {x:4,y:14,w:56,h:80},{x:88,y:10,w:64,h:92},{x:2,y:60,w:60,h:86},{x:92,y:58,w:58,h:82},
+    {x:24,y:6,w:44,h:64},{x:70,y:8,w:40,h:58},{x:8,y:88,w:46,h:66},{x:80,y:88,w:50,h:70},
+    {x:36,y:2,w:38,h:54},{x:58,y:4,w:36,h:52},{x:14,y:38,w:42,h:60},{x:82,y:36,w:44,h:62},
+    {x:44,y:92,w:40,h:56},{x:62,y:90,w:42,h:58}
+  ];
+  treeSpots.forEach(t=>{
+    const el=document.createElement('div');
+    el.style.position='absolute'; el.style.left=t.x+'%'; el.style.top=`calc(34% + ${t.y}% * 0.62)`;
+    el.style.transform='translate(-50%,-92%)'; el.style.pointerEvents='none';
+    el.innerHTML=treeSVG(t.w,t.h);
+    forestDecor.appendChild(el);
+  });
+  sand.appendChild(forestDecor);
+
+  // ---------- decorado "chiringuito" (Playa) ----------
+  function chiringuitoSVG(){
+    const ink='#123329', wood='#8a5a3a', woodDark='#6e4529', thatch='#c9a04f', thatchDark='#a87e38', counter='#c9924f';
+    return `<svg viewBox="0 0 240 170" width="190" height="134">
+      <ellipse cx="120" cy="160" rx="100" ry="8" fill="#00000022"/>
+      <path d="M120 6 L20 62 L220 62 Z" fill="${thatch}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M120 6 L60 46 L180 46 Z" fill="${thatchDark}" opacity=".6"/>
+      <path d="M30 58 L210 58" stroke="${ink}" stroke-width="3" opacity=".4"/>
+      <rect x="26" y="62" width="188" height="10" fill="${woodDark}" stroke="${ink}" stroke-width="3"/>
+      <rect x="10" y="90" width="220" height="52" fill="${wood}" stroke="${ink}" stroke-width="4"/>
+      <rect x="10" y="90" width="220" height="10" fill="${counter}"/>
+      <rect x="30" y="100" width="16" height="42" fill="${woodDark}" stroke="${ink}" stroke-width="2"/>
+      <rect x="194" y="100" width="16" height="42" fill="${woodDark}" stroke="${ink}" stroke-width="2"/>
+      <rect x="46" y="104" width="18" height="34" fill="#8fd6a6" stroke="${ink}" stroke-width="2" opacity=".85"/>
+      <rect x="70" y="108" width="16" height="30" fill="#ff8a5c" stroke="${ink}" stroke-width="2" opacity=".85"/>
+      <rect x="150" y="104" width="18" height="34" fill="#57c2ff" stroke="${ink}" stroke-width="2" opacity=".85"/>
+      <rect x="176" y="110" width="14" height="28" fill="#ffd93d" stroke="${ink}" stroke-width="2" opacity=".85"/>
+      <path d="M18 90 L14 72 M46 90 L46 72 M120 90 L120 68 M194 90 L194 72 M222 90 L226 72" stroke="${ink}" stroke-width="3" opacity=".3"/>
+    </svg>`;
+  }
+  const beachBarDecor = document.createElement('div');
+  beachBarDecor.id='beachBarDecor';
+  beachBarDecor.style.cssText='position:absolute; left:6%; top:calc(34% + 8% * 0.62); transform:translate(0,-30%); pointer-events:none; display:none;';
+  beachBarDecor.innerHTML = chiringuitoSVG();
+  sand.appendChild(beachBarDecor);
+
+  // ---------- decorados extra (niveles 11-18 procedurales) ----------
+  function volcanoSVG(){
+    const ink='#2a1710';
+    return `<svg viewBox="0 0 260 150" width="220" height="126">
+      <path d="M20 150 L100 30 L120 60 L140 20 L160 55 L240 150 Z" fill="#5a2f1a" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M110 45 L140 20 L170 50 L140 80 Z" fill="#c0331a" stroke="${ink}" stroke-width="3"/>
+      <path d="M130 20 Q140 -10 150 20" stroke="#8a8a8a" stroke-width="10" fill="none" opacity=".5" stroke-linecap="round"/>
+      <path d="M125 5 Q138 -25 155 5" stroke="#b0b0b0" stroke-width="8" fill="none" opacity=".4" stroke-linecap="round"/>
+      <path d="M110 60 Q80 90 60 150 M170 60 Q195 95 210 150" stroke="#e0972b" stroke-width="6" fill="none" opacity=".8" stroke-linecap="round"/>
+    </svg>`;
+  }
+  function mountainSVG(){
+    const ink='#123329';
+    return `<svg viewBox="0 0 260 130" width="220" height="110">
+      <path d="M0 130 L60 30 L100 70 L150 10 L210 70 L260 40 L260 130 Z" fill="#c9d8e0" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M60 30 L75 50 L45 50 Z" fill="#fff"/>
+      <path d="M150 10 L168 34 L132 34 Z" fill="#fff"/>
+      <path d="M210 70 L222 84 L198 84 Z" fill="#fff"/>
+    </svg>`;
+  }
+  function citySVG(){
+    const ink='#123329';
+    const b=(x,w,h,c)=>`<rect x="${x}" y="${100-h}" width="${w}" height="${h}" fill="${c}" stroke="${ink}" stroke-width="3"/>`;
+    let windows='';
+    return `<svg viewBox="0 0 320 100" width="260" height="82">
+      ${b(0,40,60,'#3a4a5c')}${b(44,50,90,'#4a5c70')}${b(98,36,50,'#3a4a5c')}${b(138,54,100,'#576b80')}
+      ${b(196,40,66,'#3a4a5c')}${b(240,46,84,'#4a5c70')}${b(290,30,54,'#3a4a5c')}
+      ${Array.from({length:24}).map((_,i)=>`<rect x="${10+ (i%8)*38}" y="${20+Math.floor(i/8)*22}" width="6" height="8" fill="#ffe9a8"/>`).join('')}
+    </svg>`;
+  }
+  function stationSVG(){
+    const ink='#123329';
+    return `<svg viewBox="0 0 260 180" width="200" height="138">
+      <circle cx="200" cy="34" r="20" fill="#e8b25c" stroke="${ink}" stroke-width="3"/>
+      <ellipse cx="200" cy="34" rx="34" ry="7" fill="none" stroke="#c98f3a" stroke-width="3" opacity=".8"/>
+      <circle cx="215" cy="26" r="4" fill="#c98f3a" opacity=".6"/>
+      <circle cx="30" cy="100" r="10" fill="#8fe3d0" stroke="${ink}" stroke-width="2.5" opacity=".9"/>
+      <circle cx="40" cy="18" r="6" fill="#fff" opacity=".8"/><circle cx="70" cy="8" r="3" fill="#fff" opacity=".6"/>
+      <circle cx="230" cy="90" r="4" fill="#fff" opacity=".7"/><circle cx="10" cy="50" r="3" fill="#fff" opacity=".6"/>
+      <circle cx="130" cy="14" r="3" fill="#fff" opacity=".5"/>
+      <g transform="translate(70,50) rotate(-10)">
+        <path d="M20 0 C6 0 0 40 0 90 L40 90 C40 40 34 0 20 0 Z" fill="#e0537a" stroke="${ink}" stroke-width="4"/>
+        <path d="M4 60 L-14 90 L4 82 Z" fill="#ff8a5c" stroke="${ink}" stroke-width="3"/>
+        <path d="M36 60 L54 90 L36 82 Z" fill="#ff8a5c" stroke="${ink}" stroke-width="3"/>
+        <circle cx="20" cy="26" r="9" fill="#bfe8ff" stroke="${ink}" stroke-width="3"/>
+        <path d="M8 90 L2 112 L14 100 Z M32 90 L38 112 L26 100 Z M20 90 L20 116" fill="#ffd23f" stroke="${ink}" stroke-width="2"/>
+      </g>
+      <g transform="translate(170,110) scale(0.5) rotate(15)">
+        <path d="M20 0 C6 0 0 40 0 90 L40 90 C40 40 34 0 20 0 Z" fill="#7fb3ff" stroke="${ink}" stroke-width="4"/>
+        <circle cx="20" cy="26" r="9" fill="#bfe8ff" stroke="${ink}" stroke-width="3"/>
+        <path d="M8 90 L2 112 L14 100 Z M32 90 L38 112 L26 100 Z" fill="#ffd23f" stroke="${ink}" stroke-width="2"/>
+      </g>
+    </svg>`;
+  }
+  function castleSVG(){
+    const ink='#123329', stone='#9a9488', stoneD='#7d786c';
+    return `<svg viewBox="0 0 320 120" width="270" height="100">
+      <rect x="0" y="40" width="320" height="80" fill="${stone}" stroke="${ink}" stroke-width="4"/>
+      ${Array.from({length:9}).map((_,i)=>`<rect x="${i*36}" y="26" width="24" height="18" fill="${stone}" stroke="${ink}" stroke-width="3"/>`).join('')}
+      <rect x="20" y="0" width="46" height="60" fill="${stoneD}" stroke="${ink}" stroke-width="4"/>
+      <polygon points="43,-18 20,4 66,4" fill="#8a3a3a" stroke="${ink}" stroke-width="3"/>
+      <rect x="250" y="0" width="46" height="60" fill="${stoneD}" stroke="${ink}" stroke-width="4"/>
+      <polygon points="273,-18 250,4 296,4" fill="#8a3a3a" stroke="${ink}" stroke-width="3"/>
+      <rect x="140" y="70" width="40" height="50" fill="#3a2a1f" stroke="${ink}" stroke-width="3" rx="18"/>
+    </svg>`;
+  }
+  function templeSVG(){
+    const ink='#123329', stone='#e8e0c8', stoneD='#c9bd98', gold='#e0972b';
+    return `<svg viewBox="0 0 300 160" width="250" height="132">
+      <polygon points="150,0 290,44 10,44" fill="${stoneD}" stroke="${ink}" stroke-width="4"/>
+      <polygon points="150,10 220,44 80,44" fill="#8a6a3a" opacity=".5"/>
+      <circle cx="150" cy="22" r="7" fill="${gold}" stroke="${ink}" stroke-width="2"/>
+      <rect x="0" y="44" width="300" height="14" fill="${stone}" stroke="${ink}" stroke-width="3"/>
+      ${Array.from({length:8}).map((_,i)=>`<rect x="${14+i*36}" y="58" width="18" height="60" fill="${stone}" stroke="${ink}" stroke-width="3"/>`).join('')}
+      <rect x="0" y="118" width="300" height="10" fill="${stoneD}" stroke="${ink}" stroke-width="3"/>
+      <rect x="0" y="128" width="300" height="10" fill="${stone}" stroke="${ink}" stroke-width="3"/>
+      <rect x="0" y="138" width="300" height="10" fill="${stoneD}" stroke="${ink}" stroke-width="3"/>
+      <rect x="30" y="98" width="6" height="20" fill="#5a3a1f"/><ellipse cx="33" cy="94" rx="7" ry="10" fill="#ff8c5a" opacity=".85"/>
+      <rect x="264" y="98" width="6" height="20" fill="#5a3a1f"/><ellipse cx="267" cy="94" rx="7" ry="10" fill="#ff8c5a" opacity=".85"/>
+      <rect x="140" y="70" width="20" height="48" fill="${stone}" stroke="${ink}" stroke-width="2.5"/>
+      <circle cx="150" cy="60" r="9" fill="${stone}" stroke="${ink}" stroke-width="2.5"/>
+    </svg>`;
+  }
+  function trainTracksSVG(){
+    const ink='#123329';
+    return `<svg viewBox="0 0 300 90" width="250" height="76">
+      <rect x="0" y="34" width="300" height="10" fill="#8a8a8a" stroke="${ink}" stroke-width="3"/>
+      <rect x="0" y="52" width="300" height="10" fill="#8a8a8a" stroke="${ink}" stroke-width="3"/>
+      ${Array.from({length:14}).map((_,i)=>`<rect x="${i*22}" y="30" width="12" height="38" fill="#6b4a2c" stroke="${ink}" stroke-width="2"/>`).join('')}
+      <rect x="20" y="0" width="60" height="34" fill="#c94b3f" stroke="${ink}" stroke-width="3"/>
+      <circle cx="120" cy="14" r="10" fill="#ffd23f" stroke="${ink}" stroke-width="2"/>
+    </svg>`;
+  }
+  function caveSVG(){
+    const ink='#0a0a0a', rock='#3a3630';
+    return `<svg viewBox="0 0 320 130" width="260" height="106">
+      <path d="M0 130 L0 60 Q60 10 140 40 Q220 -10 320 50 L320 130 Z" fill="${rock}" stroke="${ink}" stroke-width="4"/>
+      <ellipse cx="160" cy="90" rx="70" ry="46" fill="#08070a"/>
+      <path d="M40 70 L54 96 M70 60 L82 90 M250 60 L238 92 M280 68 L268 96" stroke="${ink}" stroke-width="5" stroke-linecap="round"/>
+    </svg>`;
+  }
+  function factorySVG(){
+    const ink='#123329';
+    return `<svg viewBox="0 0 300 110" width="250" height="92">
+      <rect x="0" y="40" width="300" height="70" fill="#7d7568" stroke="${ink}" stroke-width="4"/>
+      <rect x="30" y="0" width="26" height="46" fill="#5c564c" stroke="${ink}" stroke-width="3"/>
+      <ellipse cx="43" cy="-6" rx="16" ry="10" fill="#c9c4ba" opacity=".7"/>
+      <rect x="200" y="-10" width="22" height="56" fill="#5c564c" stroke="${ink}" stroke-width="3"/>
+      <ellipse cx="211" cy="-16" rx="14" ry="9" fill="#c9c4ba" opacity=".7"/>
+      ${Array.from({length:6}).map((_,i)=>`<rect x="${16+i*46}" y="56" width="24" height="20" fill="#bfe3ee" stroke="${ink}" stroke-width="2"/>`).join('')}
+    </svg>`;
+  }
+  function fairSVG(){
+    const ink='#123329';
+    const colors=['#ff6f52','#ffd23f','#57c2ff','#c084fc'];
+    return `<svg viewBox="0 0 220 220" width="150" height="150">
+      <circle cx="110" cy="110" r="90" fill="none" stroke="#7a5a3a" stroke-width="6"/>
+      ${Array.from({length:8}).map((_,i)=>{const a=i*Math.PI/4; const x=110+90*Math.cos(a), y=110+90*Math.sin(a);
+        return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="14" fill="${colors[i%4]}" stroke="${ink}" stroke-width="2.5"/>`;}).join('')}
+      <circle cx="110" cy="110" r="10" fill="#7a5a3a" stroke="${ink}" stroke-width="2"/>
+      <rect x="100" y="180" width="20" height="34" fill="#7a5a3a" stroke="${ink}" stroke-width="3"/>
+    </svg>`;
+  }
+  function alienShipSVG(){
+    const ink='#123329';
+    return `<svg viewBox="0 0 220 120" width="180" height="98">
+      <ellipse cx="110" cy="70" rx="100" ry="26" fill="#5c6b7d" stroke="${ink}" stroke-width="4"/>
+      <ellipse cx="110" cy="46" rx="46" ry="30" fill="#8fe3d0" stroke="${ink}" stroke-width="4" opacity=".85"/>
+      <circle cx="40" cy="70" r="8" fill="#ffd23f" stroke="${ink}" stroke-width="2"/>
+      <circle cx="180" cy="70" r="8" fill="#ffd23f" stroke="${ink}" stroke-width="2"/>
+      <circle cx="110" cy="70" r="8" fill="#ff6f52" stroke="${ink}" stroke-width="2"/>
+      <path d="M60 92 L50 112 M160 92 L170 112" stroke="#8fe3d0" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+    </svg>`;
+  }
+  function oceanDeepSVG(){
+    const ink='#0a2a33';
+    return `<svg viewBox="0 0 260 100" width="220" height="86">
+      <path d="M10 60 Q40 30 70 50 Q100 20 130 50 Q160 24 190 50 Q220 30 250 56" fill="none" stroke="#3fb6c9" stroke-width="4" opacity=".6"/>
+      <path d="M30 80 Q50 66 70 80 Q90 64 110 80" fill="none" stroke="#57ffc9" stroke-width="3" opacity=".5"/>
+      <ellipse cx="200" cy="80" rx="20" ry="8" fill="#2b7488" stroke="${ink}" stroke-width="2"/>
+    </svg>`;
+  }
+  function snowMountainSVG(){
+    const ink='#123329';
+    return `<svg viewBox="0 0 280 130" width="230" height="108">
+      <path d="M0 130 L50 40 L90 80 L150 10 L210 80 L260 40 L280 60 L280 130 Z" fill="#f4f8fb" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M50 40 L66 62 L34 62 Z M150 10 L168 36 L132 36 Z M210 80 L222 96 L198 96 Z" fill="#bcd6e0"/>
+    </svg>`;
+  }
+  function canyonSVG(){
+    const ink='#5a2f1a', rock1='#b5673a', rock2='#8a4a28';
+    return `<svg viewBox="0 0 300 130" width="250" height="108">
+      <path d="M0 130 L0 60 L30 60 L30 30 L60 30 L60 70 L90 70 L90 20 L120 20 L120 80 L150 80 L150 40 L180 40 L180 90 L210 90 L210 50 L240 50 L240 100 L270 100 L270 70 L300 70 L300 130 Z"
+        fill="${rock1}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M30 60 L60 60 M120 60 L150 60 M210 70 L240 70" stroke="${rock2}" stroke-width="3" opacity=".6"/>
+    </svg>`;
+  }
+  function swampSVG(){
+    const ink='#123329';
+    return `<svg viewBox="0 0 260 100" width="220" height="86">
+      <ellipse cx="60" cy="70" rx="46" ry="16" fill="#4a6b3a" stroke="${ink}" stroke-width="3" opacity=".8"/>
+      <ellipse cx="180" cy="76" rx="54" ry="18" fill="#4a6b3a" stroke="${ink}" stroke-width="3" opacity=".8"/>
+      <path d="M20 40 Q30 10 40 40 M100 34 Q110 6 120 34 M200 40 Q210 12 220 40" stroke="#3a5a2c" stroke-width="6" fill="none" stroke-linecap="round"/>
+    </svg>`;
+  }
+  function craterSVG(){
+    const ink='#2a2a3a';
+    return `<svg viewBox="0 0 260 110" width="220" height="94">
+      <ellipse cx="130" cy="70" rx="120" ry="34" fill="#3a3a48" stroke="${ink}" stroke-width="4"/>
+      <ellipse cx="130" cy="66" rx="90" ry="22" fill="#1c1c26" stroke="${ink}" stroke-width="3"/>
+      <circle cx="40" cy="30" r="6" fill="#8a8a9a"/><circle cx="220" cy="40" r="8" fill="#8a8a9a"/><circle cx="190" cy="14" r="4" fill="#8a8a9a"/>
+    </svg>`;
+  }
+  function circusSVG(){
+    const ink='#123329';
+    return `<svg viewBox="0 0 220 140" width="180" height="114">
+      <polygon points="110,0 210,90 10,90" fill="#f4f4f4" stroke="${ink}" stroke-width="4"/>
+      <polygon points="110,0 150,90 70,90" fill="#e0537a" stroke="${ink}" stroke-width="3"/>
+      <rect x="10" y="90" width="200" height="40" fill="#f4f4f4" stroke="${ink}" stroke-width="4"/>
+      ${Array.from({length:5}).map((_,i)=>`<rect x="${18+i*38}" y="90" width="19" height="40" fill="#e0537a" stroke="${ink}" stroke-width="2"/>`).join('')}
+      <circle cx="110" cy="-8" r="8" fill="#ffd23f" stroke="${ink}" stroke-width="2"/>
+    </svg>`;
+  }
+  function duneSVG(){
+    const ink='#8a5a2e';
+    return `<svg viewBox="0 0 300 100" width="260" height="86">
+      <path d="M0 100 Q60 30 130 60 Q190 20 240 55 Q270 40 300 60 L300 100 Z" fill="#e0b06e" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M0 100 Q60 40 130 66 Q190 30 240 60 Q270 46 300 64 L300 100 Z" fill="#d1a05a" stroke="${ink}" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M40 70 Q70 58 100 70" stroke="#c98f4a" stroke-width="2.5" fill="none" opacity=".6"/>
+      <path d="M160 62 Q190 50 220 64" stroke="#c98f4a" stroke-width="2.5" fill="none" opacity=".6"/>
+    </svg>`;
+  }
+  function iglooSVG(){
+    const ink='#123329';
+    return `<svg viewBox="0 0 220 110" width="180" height="90">
+      <path d="M10 110 Q10 30 110 30 Q210 30 210 110 Z" fill="#eaf4fb" stroke="${ink}" stroke-width="4"/>
+      <path d="M60 110 Q60 70 110 70 Q160 70 160 110" fill="none" stroke="#bcd6e0" stroke-width="3"/>
+      <path d="M90 110 L90 76 Q110 66 130 76 L130 110 Z" fill="#3a5a6a" stroke="${ink}" stroke-width="3"/>
+    </svg>`;
+  }
+  const EXTRA_SVGS = {mountain:mountainSVG, city:citySVG, station:stationSVG, castle:castleSVG, temple:templeSVG, volcano:volcanoSVG,
+    trainTracks:trainTracksSVG, cave:caveSVG, factory:factorySVG, fair:fairSVG, alienShip:alienShipSVG,
+    oceanDeep:oceanDeepSVG, snowMountain:snowMountainSVG, canyon:canyonSVG, swamp:swampSVG, crater:craterSVG,
+    circus:circusSVG, igloo:iglooSVG, dune:duneSVG};
+  const extraDecor = document.createElement('div');
+  extraDecor.id='extraDecor';
+  extraDecor.style.position='absolute'; extraDecor.style.left='50%'; extraDecor.style.top='34%';
+  extraDecor.style.transform='translate(-50%,-90%)'; extraDecor.style.pointerEvents='none'; extraDecor.style.display='none';
+  sand.appendChild(extraDecor);
+
+  // ---------- efecto tormenta ----------
+  const stormLayer = document.createElement('div');
+  stormLayer.id='stormLayer';
+  stormLayer.style.cssText='position:absolute; inset:0; pointer-events:none; display:none; z-index:6; overflow:hidden;';
+  stormLayer.innerHTML = `<div id="rainLayer" style="position:absolute; inset:0;
+      background-image:repeating-linear-gradient(115deg, rgba(220,235,255,.5) 0 2px, transparent 2px 22px);
+      animation:rainFall .35s linear infinite;"></div>
+    <div id="lightningFlash" style="position:absolute; inset:0; background:#fff; opacity:0;"></div>`;
+  stage.appendChild(stormLayer);
+  let lightningTimer=null;
+  function scheduleLightning(){
+    lightningTimer = setTimeout(()=>{
+      const flash = document.getElementById('lightningFlash');
+      if(flash){
+        flash.style.transition='none'; flash.style.opacity='.85';
+        setTimeout(()=>{ flash.style.transition='opacity .3s ease'; flash.style.opacity='0'; }, 90);
+      }
+      if(stormLayer.style.display!=='none') scheduleLightning();
+    }, randRange(1800,4200));
+  }
+
+  // ---------- SVG art ----------
+  function babySVG(kind){
+    const palettes = {
+      normal:{shell:'#2ec4a0', pattern:'#0f9b7d', light:'#8beed0', skin:'#ffe4a6'},
+      gold:{shell:'#ffd93d', pattern:'#ffb020', light:'#fff0a8', skin:'#fff0b3'},
+      red:{shell:'#ff3b3b', pattern:'#c41f1f', light:'#ff9d8a', skin:'#ffd9c2'}
+    };
+    const p = palettes[kind] || palettes.normal;
+    const {shell, pattern:shellPattern, light:shellLight, skin} = p;
+    const ink = '#123329';
+    return `<svg viewBox="-10 0 68 60" width="42" height="42">
+      <ellipse cx="30" cy="37" rx="16" ry="12" fill="${skin}" stroke="${ink}" stroke-width="2.5"/>
+      <ellipse cx="30" cy="33" rx="17" ry="14" fill="${shell}" stroke="${ink}" stroke-width="2.5"/>
+      <ellipse cx="30" cy="30" rx="12" ry="9" fill="${shellLight}" opacity=".55"/>
+      <circle cx="24" cy="29" r="3.2" fill="${shellPattern}" stroke="${ink}" stroke-width="1.4"/>
+      <circle cx="36" cy="29" r="3.2" fill="${shellPattern}" stroke="${ink}" stroke-width="1.4"/>
+      <circle cx="30" cy="39" r="3.2" fill="${shellPattern}" stroke="${ink}" stroke-width="1.4"/>
+      <ellipse cx="8" cy="30" rx="9" ry="8.5" fill="${skin}" stroke="${ink}" stroke-width="2.5"/>
+      <circle cx="4.5" cy="27" r="3.2" fill="#fff" stroke="${ink}" stroke-width="1"/>
+      <circle cx="4.5" cy="27" r="1.7" fill="${ink}"/>
+      <ellipse cx="42" cy="23" rx="6.5" ry="4.5" fill="${skin}" stroke="${ink}" stroke-width="2.2" class="leg-baby-a" style="transform-box:fill-box;transform-origin:center;"/>
+      <ellipse cx="42" cy="47" rx="6.5" ry="4.5" fill="${skin}" stroke="${ink}" stroke-width="2.2" class="leg-baby-b" style="transform-box:fill-box;transform-origin:center;"/>
+      <ellipse cx="19" cy="21" rx="5.5" ry="4" fill="${skin}" stroke="${ink}" stroke-width="2.2" class="leg-baby-c" style="transform-box:fill-box;transform-origin:center;"/>
+      <ellipse cx="19" cy="49" rx="5.5" ry="4" fill="${skin}" stroke="${ink}" stroke-width="2.2" class="leg-baby-d" style="transform-box:fill-box;transform-origin:center;"/>
+    </svg>`;
+  }
+  function motherSVG(){
+    const shell='#7a3fb8', shellPattern='#5c2b93', shellLight='#c99bf0', skin='#f4d9a8', ink='#2a1740';
+    return `<svg viewBox="-12 0 112 100" width="96" height="96">
+      <ellipse cx="50" cy="55" rx="30" ry="23" fill="${skin}" stroke="${ink}" stroke-width="4"/>
+      <ellipse cx="50" cy="50" rx="32" ry="26" fill="${shell}" stroke="${ink}" stroke-width="4"/>
+      <ellipse cx="50" cy="46" rx="22" ry="16" fill="${shellLight}" opacity=".45"/>
+      <circle cx="38" cy="40" r="5.2" fill="${shellPattern}" stroke="${ink}" stroke-width="2"/>
+      <circle cx="62" cy="40" r="5.2" fill="${shellPattern}" stroke="${ink}" stroke-width="2"/>
+      <circle cx="50" cy="58" r="5.2" fill="${shellPattern}" stroke="${ink}" stroke-width="2"/>
+      <ellipse cx="10" cy="46" rx="15" ry="14" fill="${skin}" stroke="${ink}" stroke-width="4"/>
+      <circle cx="4" cy="41" r="4.4" fill="#fff" stroke="${ink}" stroke-width="1.4"/>
+      <circle cx="4" cy="41" r="2.4" fill="${ink}"/>
+      <path d="M-2 54 Q-6 60 0 66" stroke="${ink}" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <ellipse cx="79" cy="30" rx="12" ry="8" fill="${skin}" stroke="${ink}" stroke-width="3.5" class="leg-mother-a" style="transform-box:fill-box;transform-origin:center;"/>
+      <ellipse cx="79" cy="74" rx="12" ry="8" fill="${skin}" stroke="${ink}" stroke-width="3.5" class="leg-mother-b" style="transform-box:fill-box;transform-origin:center;"/>
+      <ellipse cx="26" cy="22" rx="10" ry="7" fill="${skin}" stroke="${ink}" stroke-width="3.5" class="leg-mother-c" style="transform-box:fill-box;transform-origin:center;"/>
+      <ellipse cx="26" cy="84" rx="10" ry="7" fill="${skin}" stroke="${ink}" stroke-width="3.5" class="leg-mother-d" style="transform-box:fill-box;transform-origin:center;"/>
+    </svg>`;
+  }
+
+  function hazardSVG(shape, color){
+    const ink='#12100e';
+    switch(shape){
+      case 'turtle': return motherSVG();
+      case 'car': return `<svg viewBox="0 0 100 60" width="70" height="46">
+        <rect x="6" y="26" width="88" height="22" rx="8" fill="${color}" stroke="${ink}" stroke-width="4"/>
+        <path d="M20 26 Q28 8 45 8 L65 8 Q78 8 82 26 Z" fill="${color}" stroke="${ink}" stroke-width="4"/>
+        <rect x="30" y="12" width="38" height="14" rx="3" fill="#bfe8ff" stroke="${ink}" stroke-width="2"/>
+        <circle cx="26" cy="50" r="10" fill="#222" stroke="${ink}" stroke-width="3"/>
+        <circle cx="74" cy="50" r="10" fill="#222" stroke="${ink}" stroke-width="3"/>
+        <circle cx="26" cy="50" r="3.5" fill="#ccc"/><circle cx="74" cy="50" r="3.5" fill="#ccc"/>
+        <circle cx="90" cy="34" r="4" fill="#fff6c9" stroke="${ink}" stroke-width="1.5"/>
+      </svg>`;
+      case 'bus': return `<svg viewBox="0 0 140 70" width="92" height="46">
+        <rect x="6" y="10" width="128" height="42" rx="8" fill="${color}" stroke="${ink}" stroke-width="4"/>
+        <rect x="14" y="18" width="20" height="16" rx="2" fill="#bfe8ff" stroke="${ink}" stroke-width="2"/>
+        <rect x="40" y="18" width="20" height="16" rx="2" fill="#bfe8ff" stroke="${ink}" stroke-width="2"/>
+        <rect x="66" y="18" width="20" height="16" rx="2" fill="#bfe8ff" stroke="${ink}" stroke-width="2"/>
+        <rect x="92" y="18" width="20" height="16" rx="2" fill="#bfe8ff" stroke="${ink}" stroke-width="2"/>
+        <rect x="6" y="40" width="128" height="8" fill="#e23b3b" stroke="${ink}" stroke-width="2"/>
+        <circle cx="30" cy="60" r="10" fill="#222" stroke="${ink}" stroke-width="3"/>
+        <circle cx="110" cy="60" r="10" fill="#222" stroke="${ink}" stroke-width="3"/>
+        <circle cx="30" cy="60" r="3.5" fill="#ccc"/><circle cx="110" cy="60" r="3.5" fill="#ccc"/>
+        <circle cx="128" cy="30" r="4" fill="#fff6c9" stroke="${ink}" stroke-width="1.5"/>
+      </svg>`;
+      case 'truck': return `<svg viewBox="0 0 150 70" width="98" height="46">
+        <rect x="4" y="18" width="86" height="34" rx="4" fill="${color}" stroke="${ink}" stroke-width="4"/>
+        <rect x="94" y="26" width="52" height="26" rx="4" fill="${color}" stroke="${ink}" stroke-width="4"/>
+        <rect x="102" y="32" width="24" height="14" rx="2" fill="#bfe8ff" stroke="${ink}" stroke-width="2"/>
+        <circle cx="28" cy="58" r="10" fill="#222" stroke="${ink}" stroke-width="3"/>
+        <circle cx="70" cy="58" r="10" fill="#222" stroke="${ink}" stroke-width="3"/>
+        <circle cx="120" cy="58" r="10" fill="#222" stroke="${ink}" stroke-width="3"/>
+        <circle cx="28" cy="58" r="3.5" fill="#ccc"/><circle cx="70" cy="58" r="3.5" fill="#ccc"/><circle cx="120" cy="58" r="3.5" fill="#ccc"/>
+        <circle cx="140" cy="34" r="4" fill="#fff6c9" stroke="${ink}" stroke-width="1.5"/>
+      </svg>`;
+      case 'crab': return `<svg viewBox="0 0 100 70" width="64" height="44">
+        <ellipse cx="50" cy="40" rx="30" ry="20" fill="${color}" stroke="${ink}" stroke-width="4"/>
+        <circle cx="34" cy="24" r="6" fill="${color}" stroke="${ink}" stroke-width="3"/>
+        <circle cx="66" cy="24" r="6" fill="${color}" stroke="${ink}" stroke-width="3"/>
+        <circle cx="32" cy="21" r="2" fill="#111"/><circle cx="64" cy="21" r="2" fill="#111"/>
+        <path d="M14 36 L0 28 M14 44 L0 50 M86 36 L100 28 M86 44 L100 50" stroke="${ink}" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M28 56 L20 66 M40 60 L36 70 M60 60 L64 70 M72 56 L80 66" stroke="${ink}" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </svg>`;
+      case 'cart': return `<svg viewBox="0 0 100 70" width="64" height="46">
+        <path d="M12 12 H24 L34 46 H84 L94 20 H30" fill="none" stroke="${ink}" stroke-width="5" stroke-linejoin="round"/>
+        <rect x="30" y="20" width="60" height="26" rx="3" fill="${color}" stroke="${ink}" stroke-width="4"/>
+        <circle cx="40" cy="58" r="8" fill="#333" stroke="${ink}" stroke-width="3"/>
+        <circle cx="78" cy="58" r="8" fill="#333" stroke="${ink}" stroke-width="3"/>
+      </svg>`;
+      case 'fish': return `<svg viewBox="0 0 100 60" width="64" height="40">
+        <ellipse cx="45" cy="30" rx="32" ry="18" fill="${color}" stroke="${ink}" stroke-width="4"/>
+        <path d="M12 30 L-8 14 L-8 46 Z" fill="${color}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>
+        <circle cx="62" cy="24" r="3" fill="#fff"/><circle cx="62" cy="24" r="1.5" fill="${ink}"/>
+        <path d="M40 14 Q45 4 52 14" stroke="${ink}" stroke-width="3" fill="none"/>
+      </svg>`;
+      case 'ball': return `<svg viewBox="0 0 100 100" width="46" height="46">
+        <circle cx="50" cy="50" r="42" fill="${color}" stroke="${ink}" stroke-width="4"/>
+        <polygon points="50,28 65,40 60,58 40,58 35,40" fill="${ink}"/>
+      </svg>`;
+      case 'owl': return `<svg viewBox="0 0 100 100" width="60" height="60">
+        <ellipse cx="50" cy="55" rx="34" ry="32" fill="${color}" stroke="${ink}" stroke-width="4"/>
+        <circle cx="36" cy="46" r="12" fill="#fff" stroke="${ink}" stroke-width="3"/>
+        <circle cx="64" cy="46" r="12" fill="#fff" stroke="${ink}" stroke-width="3"/>
+        <circle cx="36" cy="46" r="5" fill="${ink}"/><circle cx="64" cy="46" r="5" fill="${ink}"/>
+        <polygon points="50,54 44,64 56,64" fill="#f0a83a" stroke="${ink}" stroke-width="2"/>
+        <path d="M20 30 Q30 10 44 22 M80 30 Q70 10 56 22" stroke="${ink}" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </svg>`;
+      case 'rock': return `<svg viewBox="0 0 100 90" width="54" height="48">
+        <path d="M10 80 Q4 46 30 30 Q42 10 66 20 Q92 26 88 56 Q94 80 78 84 L18 84 Q8 84 10 80Z"
+          fill="${color}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M30 46 Q40 34 54 36" stroke="${ink}" stroke-width="2.5" fill="none" opacity=".5"/>
+      </svg>`;
+      case 'splash': return `<svg viewBox="0 0 100 100" width="60" height="60">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="${color}" stroke-width="6" opacity=".85"/>
+        <circle cx="50" cy="50" r="24" fill="none" stroke="${color}" stroke-width="6" opacity=".6"/>
+        <circle cx="50" cy="50" r="9" fill="${color}" opacity=".8"/>
+      </svg>`;
+      case 'sprinkler': return `<svg viewBox="0 0 100 100" width="56" height="56">
+        <rect x="44" y="60" width="12" height="24" rx="3" fill="#7a8a7a" stroke="${ink}" stroke-width="3"/>
+        <circle cx="50" cy="55" r="10" fill="#9aa89a" stroke="${ink}" stroke-width="3"/>
+        <g stroke="${color}" stroke-width="4" opacity=".8" stroke-linecap="round">
+          <path d="M50 50 L50 10"/><path d="M50 50 L20 24"/><path d="M50 50 L80 24"/>
+          <path d="M50 50 L15 50"/><path d="M50 50 L85 50"/>
+        </g>
+      </svg>`;
+      case 'tornado': return `<svg viewBox="0 0 80 100" width="52" height="66">
+        <path d="M8 10 L72 10 L54 30 L64 30 L44 50 L52 50 L34 68 L38 68 L24 90"
+          fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="40" cy="10" rx="34" ry="6" fill="${color}" opacity=".5"/>
+      </svg>`;
+      default: return `<svg viewBox="0 0 100 100" width="50" height="50">
+        <ellipse cx="50" cy="55" rx="34" ry="28" fill="${color}" stroke="${ink}" stroke-width="4"/>
+        <circle cx="38" cy="46" r="5" fill="#fff" stroke="${ink}" stroke-width="1.5"/>
+        <circle cx="62" cy="46" r="5" fill="#fff" stroke="${ink}" stroke-width="1.5"/>
+        <circle cx="38" cy="46" r="2.2" fill="${ink}"/><circle cx="62" cy="46" r="2.2" fill="${ink}"/>
+      </svg>`;
+    }
+  }
+
+  // ---------- game state ----------
+  let score=0, timeLeft=60, running=false, spawnTimers=[], comboCount=0, comboTimeout=null;
+  let pendingGoldSpawn=false, pendingRedSpawn=false;
+  let normalCatches=0;
+  // (sistema de detección de mínimos por dinero eliminado: el juego ya es solo por puntos)
+  let gamesPlayed=0; // se incrementa cada partida; cada 10 partidas sale la tortuga roja
+  const SAND_TOP=0.34; // matches css
+
+  function setScore(v){
+    score=Math.max(0,v);
+    scoreEl.textContent=score;
+    scoreEl.style.transform='scale(1.15)';
+    setTimeout(()=>scoreEl.style.transform='scale(1)',120);
+  }
+  scoreEl.style.transition='transform .12s';
+
+  // ---------- SONIDO ----------
+  let audioCtx = null;
+  let soundEnabled = true;
+  function getAudioCtx(){
+    if(!audioCtx){
+      try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ return null; }
+    }
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  function tone(freq, start, dur, type, vol, ctx){
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime+start);
+    gain.gain.setValueAtTime(0, ctx.currentTime+start);
+    gain.gain.linearRampToValueAtTime(vol||0.18, ctx.currentTime+start+0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+start+dur);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(ctx.currentTime+start);
+    osc.stop(ctx.currentTime+start+dur+0.02);
+  }
+  function playCatch(){
+    if(!soundEnabled) return;
+    const ctx = getAudioCtx(); if(!ctx) return;
+    tone(680, 0, 0.09, 'sine', 0.16, ctx);
+    tone(920, 0.06, 0.12, 'sine', 0.14, ctx);
+  }
+  function playHit(){
+    if(!soundEnabled) return;
+    const ctx = getAudioCtx(); if(!ctx) return;
+    tone(220, 0, 0.16, 'sawtooth', 0.12, ctx);
+    tone(140, 0.05, 0.2, 'sawtooth', 0.1, ctx);
+  }
+  function playSpecial(){
+    if(!soundEnabled) return;
+    const ctx = getAudioCtx(); if(!ctx) return;
+    [660,830,990,1320].forEach((f,i)=> tone(f, i*0.08, 0.16, 'triangle', 0.16, ctx));
+  }
+  function playPrize(){
+    if(!soundEnabled) return;
+    const ctx = getAudioCtx(); if(!ctx) return;
+    [520,660,780,880,1040].forEach((f,i)=> tone(f, i*0.09, 0.22, 'sine', 0.15, ctx));
+  }
+  function playClick(){
+    if(!soundEnabled) return;
+    const ctx = getAudioCtx(); if(!ctx) return;
+    tone(420, 0, 0.06, 'sine', 0.1, ctx);
+  }
+
+  // ---------- RACHA DIARIA ----------
+  function dateStr(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+  function loadStreakData(){
+    try{
+      const raw = localStorage.getItem('tortugas_streak');
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+  function saveStreakData(){
+    try{ localStorage.setItem('tortugas_streak', JSON.stringify(streakData)); }catch(e){}
+  }
+  let streakData = {lastPlayDate:null, streak:0, bonusSpinAvailable:false, bonusPrizeAvailable:false};
+  (function initStreak(){
+    const today = new Date();
+    const todayKey = dateStr(today);
+    const yesterday = new Date(today); yesterday.setDate(yesterday.getDate()-1);
+    const yesterdayKey = dateStr(yesterday);
+    const stored = loadStreakData();
+    if(stored){
+      streakData = stored;
+      if(streakData.lastPlayDate === todayKey){
+        // ya contabilizado hoy
+      } else if(streakData.lastPlayDate === yesterdayKey){
+        streakData.streak += 1;
+        streakData.lastPlayDate = todayKey;
+        const cyclePos = ((streakData.streak-1) % 7) + 1; // 1..7, se repite cada semana
+        if(cyclePos===3) streakData.bonusSpinAvailable = true;
+        if(cyclePos===7) streakData.bonusPrizeAvailable = true;
+      } else {
+        streakData.streak = 1;
+        streakData.lastPlayDate = todayKey;
+      }
+    } else {
+      streakData = {lastPlayDate:todayKey, streak:1, bonusSpinAvailable:false, bonusPrizeAvailable:false};
+    }
+    saveStreakData();
+  })();
+  function updateStreakUI(){
+    const el = document.getElementById('streakNotice');
+    if(!el) return;
+    let msg = '🔥 Racha: '+streakData.streak+(streakData.streak===1?' día':' días');
+    if(streakData.bonusSpinAvailable) msg += ' — ¡tienes un giro extra guardado! 🎡';
+    if(streakData.bonusPrizeAvailable) msg += ' — ¡tienes un premio garantizado guardado! 💰';
+    el.textContent = msg;
+  }
+
+  // ---------- COLECCIÓN DE TORTUGUITAS ----------
+  const CARD_TYPES = [
+    {id:'verde', name:'Verde Clásica', color:'#2ec4a0', weight:100},
+    {id:'azul', name:'Azul Océano', color:'#3fa9dc', weight:95},
+    {id:'coral', name:'Coral', color:'#ff8a65', weight:90},
+    {id:'esmeralda', name:'Esmeralda', color:'#0f9b7d', weight:85},
+    {id:'rayada', name:'Rayada', color:'#f4d54c', weight:80},
+    {id:'lunar', name:'Lunar', color:'#c9c9c9', weight:75},
+    {id:'zafiro', name:'Zafiro', color:'#2b5ea8', weight:70},
+    {id:'ambar', name:'Ámbar', color:'#e0972b', weight:65},
+    {id:'rubi', name:'Rubí', color:'#c0263a', weight:60},
+    {id:'tornasol', name:'Tornasol', color:'#c084fc', weight:50},
+    {id:'estrellada', name:'Estrellada', color:'#3a2a5c', weight:40},
+    {id:'arcoiris', name:'Arcoíris', color:'linear-gradient(90deg,#ff6f52,#ffd166,#57ffc9,#7fb3ff)', weight:20},
+    {id:'albina', name:'Albina', color:'#ffffff', weight:1, ultraRare:true}
+  ];
+  const CARD_TOTAL_WEIGHT = CARD_TYPES.reduce((a,c)=>a+c.weight,0);
+  function pickCard(){
+    let r = Math.random()*CARD_TOTAL_WEIGHT;
+    for(const c of CARD_TYPES){
+      if(r<c.weight) return c;
+      r-=c.weight;
+    }
+    return CARD_TYPES[0];
+  }
+  let collectionData = {owned:{}};
+  function loadCollection(){
+    try{
+      const raw = localStorage.getItem('tortugas_collection');
+      return raw ? JSON.parse(raw) : {owned:{}};
+    }catch(e){ return {owned:{}}; }
+  }
+  function saveCollection(){
+    try{ localStorage.setItem('tortugas_collection', JSON.stringify(collectionData)); }catch(e){}
+  }
+  collectionData = loadCollection();
+  function registerCatchCard(){
+    const card = pickCard();
+    const isNew = !collectionData.owned[card.id];
+    collectionData.owned[card.id] = (collectionData.owned[card.id]||0)+1;
+    saveCollection();
+    if(isNew){
+      const rect = stage.getBoundingClientRect();
+      popText(rect.width/2, rect.height*0.3, '📖 ¡Nueva carta: '+card.name+'!', '');
+      playSpecial();
+    }
+    return card;
+  }
+  function ownedCount(){ return Object.keys(collectionData.owned).length; }
+  function renderAlbum(){
+    const grid = document.getElementById('albumGrid');
+    grid.innerHTML='';
+    CARD_TYPES.forEach(c=>{
+      const owned = !!collectionData.owned[c.id];
+      const count = collectionData.owned[c.id]||0;
+      const cell = document.createElement('div');
+      cell.style.cssText='display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px; border-radius:12px; background:rgba(8,21,34,.5); border:2px solid '+(owned?'rgba(87,255,201,.5)':'rgba(244,236,218,.15)')+';';
+      const swatch = document.createElement('div');
+      swatch.style.cssText='width:38px; height:38px; border-radius:50%; border:2.5px solid '+(owned?'#123329':'#3a3a3a')+';'
+        + (owned ? 'background:'+c.color+';' : 'background:#2a2f38;');
+      if(!owned){ swatch.textContent='?'; swatch.style.display='flex'; swatch.style.alignItems='center'; swatch.style.justifyContent='center'; swatch.style.color='#666'; swatch.style.fontWeight='800'; }
+      const label = document.createElement('div');
+      label.style.cssText='font-family:Nunito; font-size:10px; font-weight:700; color:'+(owned?'var(--ink)':'#666')+'; text-align:center;';
+      label.textContent = owned ? (c.name + (c.ultraRare?' ✨':'') + (count>1?' x'+count:'')) : '???';
+      cell.appendChild(swatch); cell.appendChild(label);
+      grid.appendChild(cell);
+    });
+    document.getElementById('albumProgress').textContent = ownedCount()+' / '+CARD_TYPES.length+' cartas';
+  }
+
+  // ---------- MEDALLAS POR ESCENARIO ----------
+  const MEDAL_DEFS = [
+    {id:'intacto', icon:'🛡️', name:'Intacto', desc:'Termina la partida sin recibir ningún golpe'},
+    {id:'recolector', icon:'🐢', name:'Recolector', desc:'Atrapa 12 o más tortuguitas normales en una partida'},
+    {id:'racha', icon:'🔥', name:'Racha', desc:'Consigue una racha de combo x5 o más'}
+  ];
+  let medalsData = {};
+  function loadMedals(){
+    try{
+      const raw = localStorage.getItem('tortugas_medals');
+      return raw ? JSON.parse(raw) : {};
+    }catch(e){ return {}; }
+  }
+  function saveMedals(){
+    try{ localStorage.setItem('tortugas_medals', JSON.stringify(medalsData)); }catch(e){}
+  }
+  medalsData = loadMedals();
+  let hitsTaken = 0;
+  let maxComboThisRound = 0;
+  function evaluateMedals(){
+    const levelId = currentLevel.id;
+    if(!medalsData[levelId]) medalsData[levelId] = {};
+    const earned = [];
+    const checks = {
+      intacto: hitsTaken===0 && normalCatches>0,
+      recolector: normalCatches>=12,
+      racha: maxComboThisRound>=5
+    };
+    MEDAL_DEFS.forEach(m=>{
+      if(checks[m.id] && !medalsData[levelId][m.id]){
+        medalsData[levelId][m.id] = true;
+        earned.push(m);
+      }
+    });
+    if(earned.length){
+      saveMedals();
+      const rect = stage.getBoundingClientRect();
+      earned.forEach((m,i)=>{
+        setTimeout(()=>{
+          popText(rect.width/2, rect.height*0.36, m.icon+' ¡Medalla: '+m.name+'!', '');
+          playSpecial();
+        }, i*650);
+      });
+    }
+  }
+  function medalCountForLevel(levelId){
+    const owned = medalsData[levelId] || {};
+    return MEDAL_DEFS.filter(m=>owned[m.id]).length;
+  }
+
+  // ---------- MARCADOR DE MEJORES PUNTUACIONES (1 a 6 jugadores) ----------
+  const HIGHSCORE_MAX = 6;
+  let highscores = [];
+  function loadHighscores(){
+    try{
+      const raw = localStorage.getItem('tortugas_highscores');
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){ return []; }
+  }
+  function saveHighscores(){
+    try{ localStorage.setItem('tortugas_highscores', JSON.stringify(highscores)); }catch(e){}
+  }
+  highscores = loadHighscores();
+  function qualifiesForHighscore(s){
+    if(s<=0) return false;
+    if(highscores.length < HIGHSCORE_MAX) return true;
+    return s > highscores[highscores.length-1].score;
+  }
+  function showHighscoreEntry(){
+    document.getElementById('hsEntryScore').textContent = score;
+    document.getElementById('hsNameInput').value='';
+    document.getElementById('highscoreEntryOverlay').classList.remove('hidden');
+    setTimeout(()=>document.getElementById('hsNameInput').focus(), 200);
+  }
+  function saveHighscoreEntry(){
+    const input = document.getElementById('hsNameInput');
+    const name = (input.value||'').trim().slice(0,12) || 'Jugador';
+    highscores.push({name, score, level:currentLevel.id});
+    highscores.sort((a,b)=>b.score-a.score);
+    highscores = highscores.slice(0,HIGHSCORE_MAX);
+    saveHighscores();
+    document.getElementById('highscoreEntryOverlay').classList.add('hidden');
+    document.getElementById('overOverlay').classList.remove('hidden');
+  }
+  function renderHighscoreTable(){
+    const wrap = document.getElementById('highscoreTable');
+    wrap.innerHTML='';
+    if(highscores.length===0){
+      wrap.innerHTML = '<div style="font-family:Nunito; color:var(--ink-dim); text-align:center; font-size:13px;">Todavía no hay puntuaciones guardadas. ¡Sé el primero!</div>';
+      return;
+    }
+    const medals=['🥇','🥈','🥉'];
+    highscores.forEach((h,i)=>{
+      const row=document.createElement('div');
+      row.style.cssText='display:flex; align-items:center; justify-content:space-between; background:rgba(8,21,34,.5); border:1px solid rgba(244,236,218,.15); border-radius:12px; padding:8px 14px;';
+      row.innerHTML = `<span style="font-family:'Baloo 2'; font-weight:700; color:var(--ink);">${medals[i]||('#'+(i+1))} ${h.name}</span>
+        <span style="font-family:'Baloo 2'; font-weight:800; color:var(--gold);">${h.score} pts</span>`;
+      wrap.appendChild(row);
+    });
+  }
+
+  function popText(x,y,text,cls){
+    const p=document.createElement('div');
+    p.className='catch-pop'+(cls?' '+cls:'');
+    p.textContent=text;
+    p.style.left=x+'px'; p.style.top=y+'px';
+    stage.appendChild(p);
+    setTimeout(()=>p.remove(),700);
+  }
+  function sparkleAt(x,y){
+    const s=document.createElement('div');
+    s.className='sparkle'; s.style.left=(x-10)+'px'; s.style.top=(y-10)+'px';
+    s.innerHTML='<svg width="20" height="20"><circle cx="10" cy="10" r="9" fill="none" stroke="#57ffc9" stroke-width="2"/></svg>';
+    stage.appendChild(s);
+    setTimeout(()=>s.remove(),500);
+  }
+
+  function randRange(a,b){return a+Math.random()*(b-a);}
+
+  function spawnBaby(){
+    if(!running) return;
+    const spot = nestSpots[Math.floor(Math.random()*nestSpots.length)];
+    let kind='normal';
+    if(pendingRedSpawn){ kind='red'; pendingRedSpawn=false; }
+    else if(pendingGoldSpawn){ kind='gold'; pendingGoldSpawn=false; }
+    const el=document.createElement('div');
+    el.className='baby'+(kind!=='normal'?' gold':'');
+    el.innerHTML=babySVG(kind);
+    const startXpct = spot.x, startYpct = 34 + spot.y*0.62;
+    el.style.left = startXpct+'%';
+    el.style.top = startYpct+'%';
+    stage.appendChild(el);
+
+    // path toward the sea (upward) with slight horizontal drift
+    const diff = currentLevel.diff || 1;
+    const duration = randRange(4200,6600) * diff;
+    const driftX = randRange(-40,40);
+    const targetTop = 20; // % - near sea line, they "escape" if they reach it
+    let caught=false;
+
+    const startTime = performance.now();
+    function step(now){
+      if(!running || caught) return;
+      const t = Math.min(1,(now-startTime)/duration);
+      const curTop = startYpct + (targetTop-startYpct)*t;
+      const curLeft = startXpct + (driftX*t)/ (stage.clientWidth/100);
+      el.style.top = curTop+'%';
+      el.style.left = curLeft+'%';
+      el.style.transform = `translate(-50%,-50%) rotate(${Math.sin(t*10)*6}deg)`;
+      if(curTop <= SAND_TOP*100){ el.style.pointerEvents='none'; }
+      if(t>=1){
+        el.remove();
+        return;
+      }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+
+    function onCatch(e){
+      if(caught) return; caught=true;
+      e.stopPropagation();
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left+rect.width/2, cy = rect.top+rect.height/2;
+      sparkleAt(cx,cy);
+      if(kind==='red'){
+        popText(cx,cy-10,'★ ROJA','');
+        el.remove();
+        setScore(score+40);
+        comboBump();
+        playSpecial();
+        openRoulette();
+      } else if(kind==='gold'){
+        popText(cx,cy-10,'★ DORADA','');
+        el.remove();
+        setScore(score+25);
+        comboBump();
+        playSpecial();
+        if(streakData.bonusPrizeAvailable){
+          streakData.bonusPrizeAvailable = false;
+          saveStreakData();
+          setScore(score+150);
+          popText(cx,cy-40,'🔥 +150 puntos de racha','');
+        } else {
+          setScore(score+75);
+          popText(cx,cy-40,'+75 puntos','');
+        }
+      } else {
+        const pts = 5 + Math.floor(Math.random()*6);
+        popText(cx,cy-10,'+'+pts,'');
+        el.remove();
+        setScore(score+pts);
+        comboBump();
+        playCatch();
+        normalCatches++;
+        registerCatchCard();
+      }
+    }
+    el.addEventListener('pointerdown', onCatch);
+  }
+
+  function confettiBurst(){
+    const rect = stage.getBoundingClientRect();
+    const colors=['#ff6f52','#ffd166','#57ffc9','#7fb3ff','#c084fc','#fff'];
+    for(let i=0;i<24;i++){
+      const p = document.createElement('div');
+      const size = 5+Math.random()*5;
+      const dx = (Math.random()-0.5)*rect.width*0.8;
+      const dy = 40+Math.random()*rect.height*0.6;
+      const rot = Math.random()*720-360;
+      p.style.cssText=`position:absolute; left:50%; top:80px; width:${size}px; height:${size*1.6}px;
+        background:${colors[i%colors.length]}; z-index:26; pointer-events:none; border-radius:1px;
+        transform:translate(-50%,0) rotate(0deg); transition:transform 1s cubic-bezier(.2,.7,.4,1), opacity 1s ease;`;
+      stage.appendChild(p);
+      requestAnimationFrame(()=>{
+        p.style.transform=`translate(calc(-50% + ${dx}px), ${dy}px) rotate(${rot}deg)`;
+        p.style.opacity='0';
+      });
+      setTimeout(()=>p.remove(),1050);
+    }
+  }
+  function screenShake(){
+    stage.style.transition='transform .06s';
+    let n=0;
+    const shake=()=>{
+      n++;
+      if(n>6){ stage.style.transform=''; return; }
+      stage.style.transform=`translate(${(Math.random()-0.5)*8}px, ${(Math.random()-0.5)*8}px)`;
+      setTimeout(shake, 45);
+    };
+    shake();
+  }
+  function comboBump(){
+    comboCount++;
+    maxComboThisRound = Math.max(maxComboThisRound, comboCount);
+    if(comboCount>=3){
+      comboEl.textContent = '¡Racha x'+comboCount+'!';
+      comboEl.style.opacity='1';
+      comboEl.style.transition='opacity .3s';
+    }
+    if(comboCount===5 || comboCount===8 || (comboCount>8 && comboCount%5===0)){
+      confettiBurst();
+      screenShake();
+      playSpecial();
+    }
+    clearTimeout(comboTimeout);
+    comboTimeout=setTimeout(()=>{ comboCount=0; comboEl.style.opacity='0'; },1800);
+  }
+
+  function hitFeedback(el, cx, cy){
+    popText(cx,cy-10,'¡CUIDADO! -15','bite-pop');
+    setScore(score-15);
+    playHit();
+    hitsTaken++;
+    el.style.filter='brightness(1.6) saturate(1.6)';
+    setTimeout(()=>el.remove(),200);
+  }
+
+  function spawnHazard(){
+    if(!running) return;
+    const level = currentLevel;
+    const type = level.hazardType || 'horizontal';
+    if(type === 'none') return;
+    const CAR_COLORS = ['#ffd23f','#ff6f52','#57ffc9','#7fb3ff','#f4f4f4','#c084fc'];
+    const shape = level.hazardShapes ? level.hazardShapes[Math.floor(Math.random()*level.hazardShapes.length)] : (level.hazardShape || 'blob');
+    const color = level.hazardColor || CAR_COLORS[Math.floor(Math.random()*CAR_COLORS.length)];
+    const speedMul = (level.hazardFast ? 0.6 : 1) * (level.diff || 1);
+
+    if(type === 'horizontal'){
+      const fromLeft = Math.random()<0.5;
+      const el=document.createElement('div');
+      el.className='mother';
+      el.innerHTML= shape==='tornado' ? `<div style="animation:spin 0.6s linear infinite;">${hazardSVG(shape,color)}</div>` : hazardSVG(shape,color);
+      const yPct = 34 + randRange(10,80)*0.62;
+      el.style.top = yPct+'%';
+      el.style.left = (fromLeft? -10: 110)+'%';
+      el.style.transform='translate(-50%,-50%)'+(fromLeft?'':' scaleX(-1)');
+      stage.appendChild(el);
+      const duration = randRange(4200,7200) * speedMul;
+      const startTime = performance.now();
+      let bitten=false;
+      function step(now){
+        if(!running){ el.remove(); return;}
+        const t=Math.min(1,(now-startTime)/duration);
+        const leftVal = fromLeft ? (-10 + 120*t) : (110 - 120*t);
+        el.style.left = leftVal+'%';
+        if(t>0.94){ el.style.pointerEvents='none'; }
+        if(t>=1){ el.remove(); return; }
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+      el.addEventListener('pointerdown', (e)=>{
+        if(bitten) return; bitten=true;
+        e.stopPropagation();
+        const rect = el.getBoundingClientRect();
+        hitFeedback(el, rect.left+rect.width/2, rect.top+rect.height/2);
+      });
+
+    } else if(type === 'vertical'){
+      const el=document.createElement('div');
+      el.className='mother';
+      el.innerHTML=hazardSVG(shape,color);
+      const xPct = randRange(8,88);
+      el.style.left = xPct+'%';
+      el.style.top = '2%';
+      el.style.transform='translate(-50%,-50%)';
+      stage.appendChild(el);
+      const duration = randRange(2600,4400) * speedMul;
+      const startTime = performance.now();
+      let bitten=false;
+      function step(now){
+        if(!running){ el.remove(); return;}
+        const t=Math.min(1,(now-startTime)/duration);
+        el.style.top = (2 + t*95)+'%';
+        if(t>0.94){ el.style.pointerEvents='none'; }
+        if(t>=1){ el.remove(); return; }
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+      el.addEventListener('pointerdown', (e)=>{
+        if(bitten) return; bitten=true;
+        e.stopPropagation();
+        const rect = el.getBoundingClientRect();
+        hitFeedback(el, rect.left+rect.width/2, rect.top+rect.height/2);
+      });
+
+    } else if(type === 'diagonal'){
+      const el=document.createElement('div');
+      el.className='mother';
+      el.innerHTML=hazardSVG(shape,color);
+      const fromLeft = Math.random()<0.5;
+      const startY = randRange(38,90);
+      const endY = randRange(38,90);
+      el.style.left = (fromLeft?-10:110)+'%';
+      el.style.top = startY+'%';
+      el.style.transform='translate(-50%,-50%)';
+      stage.appendChild(el);
+      const duration = randRange(1400,2400) * speedMul;
+      const startTime = performance.now();
+      let bitten=false;
+      function step(now){
+        if(!running){ el.remove(); return;}
+        const t=Math.min(1,(now-startTime)/duration);
+        const leftVal = fromLeft ? (-10+120*t) : (110-120*t);
+        const topVal = startY + (endY-startY)*t;
+        el.style.left = leftVal+'%'; el.style.top = topVal+'%';
+        el.style.transform = `translate(-50%,-50%) rotate(${t*360}deg)`;
+        if(t>0.94){ el.style.pointerEvents='none'; }
+        if(t>=1){ el.remove(); return; }
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+      el.addEventListener('pointerdown', (e)=>{
+        if(bitten) return; bitten=true;
+        e.stopPropagation();
+        const rect = el.getBoundingClientRect();
+        hitFeedback(el, rect.left+rect.width/2, rect.top+rect.height/2);
+      });
+
+    } else if(type === 'zone'){
+      const el=document.createElement('div');
+      el.className='mother';
+      el.style.width='60px'; el.style.height='60px';
+      el.innerHTML=hazardSVG(shape,color);
+      const xPct = randRange(10,88), yPct = 34 + randRange(10,85)*0.62;
+      el.style.left = xPct+'%'; el.style.top = yPct+'%';
+      el.style.transform='translate(-50%,-50%) scale(.3)';
+      el.style.opacity='0';
+      stage.appendChild(el);
+      let bitten=false;
+      // se activa (peligro real) tras un aviso, luego desaparece
+      requestAnimationFrame(()=>{ el.style.transition='transform .5s ease, opacity .5s ease'; el.style.opacity='1'; el.style.transform='translate(-50%,-50%) scale(1)'; });
+      const activeDelay = 550;
+      const activeDuration = 1400 * speedMul;
+      setTimeout(()=>{
+        if(!running){ el.remove(); return; }
+        el.dataset.active='1';
+        el.style.filter='drop-shadow(0 0 10px '+color+')';
+      }, activeDelay);
+      setTimeout(()=>{
+        if(!running) return;
+        el.style.transition='opacity .3s ease, transform .3s ease';
+        el.style.opacity='0'; el.style.transform='translate(-50%,-50%) scale(.6)';
+        setTimeout(()=>el.remove(),320);
+      }, activeDelay+activeDuration);
+      el.addEventListener('pointerdown', (e)=>{
+        if(bitten || el.dataset.active!=='1') return; bitten=true;
+        e.stopPropagation();
+        const rect = el.getBoundingClientRect();
+        hitFeedback(el, rect.left+rect.width/2, rect.top+rect.height/2);
+      });
+    }
+  }
+
+  let rainActive = false;
+  function loopSpawns(){
+    const diff = currentLevel.diff || 1;
+    const hazardFreq = currentLevel.hazardFreqMul || 1;
+    spawnTimers.push(setTimeout(function babyLoop(){
+      if(!running) return;
+      spawnBaby();
+      const rainMul = rainActive ? 0.35 : 1;
+      spawnTimers.push(setTimeout(babyLoop, randRange(600,1300)*diff*rainMul));
+    }, randRange(300,900)*diff));
+
+    spawnTimers.push(setTimeout(function motherLoop(){
+      if(!running) return;
+      const count = currentLevel.hazardExact ? currentLevel.hazardCount : (currentLevel.hazardCount ? Math.max(1, currentLevel.hazardCount - Math.floor(Math.random()*2)) : 1);
+      for(let i=0;i<count;i++){
+        spawnTimers.push(setTimeout(()=>{ if(running) spawnHazard(); }, i*220));
+      }
+      spawnTimers.push(setTimeout(motherLoop, randRange(3200,5200)*diff*hazardFreq));
+    }, 2500*diff*hazardFreq));
+
+    scheduleModifier();
+  }
+
+  // ---------- MODIFICADORES ALEATORIOS ----------
+  function scheduleModifier(){
+    spawnTimers.push(setTimeout(function check(){
+      if(!running) return;
+      if(Math.random()<0.6){
+        triggerModifier(Math.random()<0.5 ? 'rain' : 'fog');
+      }
+      spawnTimers.push(setTimeout(check, randRange(14000,24000)));
+    }, randRange(9000,16000)));
+  }
+  function showModifierBanner(text){
+    const b = document.createElement('div');
+    b.textContent = text;
+    b.style.cssText = 'position:absolute; top:64px; left:50%; transform:translateX(-50%); z-index:22; font-family:"Baloo 2"; font-weight:800; font-size:16px; color:var(--gold); text-shadow:0 0 10px rgba(255,209,102,.6); background:rgba(8,21,34,.6); padding:8px 18px; border-radius:14px; pointer-events:none; opacity:0; transition:opacity .3s;';
+    stage.appendChild(b);
+    requestAnimationFrame(()=>{ b.style.opacity='1'; });
+    setTimeout(()=>{ b.style.opacity='0'; setTimeout(()=>b.remove(),350); }, 2600);
+  }
+  function triggerModifier(type){
+    if(type==='rain'){
+      showModifierBanner('🌧️ ¡Lluvia de tortuguitas!');
+      playSpecial();
+      rainActive = true;
+      setTimeout(()=>{ rainActive=false; }, 5000);
+    } else {
+      showModifierBanner('🌫️ ¡Niebla!');
+      const fog = document.createElement('div');
+      fog.style.cssText='position:absolute; inset:0; z-index:8; pointer-events:none; background:rgba(220,230,235,0); transition:background 1.2s ease;';
+      stage.appendChild(fog);
+      requestAnimationFrame(()=>{ fog.style.background='rgba(220,230,235,.55)'; });
+      setTimeout(()=>{
+        fog.style.background='rgba(220,230,235,0)';
+        setTimeout(()=>fog.remove(), 1300);
+      }, 4200);
+    }
+  }
+
+  function clearAllCritters(){
+    document.querySelectorAll('.baby,.mother').forEach(e=>e.remove());
+    spawnTimers.forEach(t=>clearTimeout(t));
+    spawnTimers=[];
+  }
+
+  let tickInterval=null, goldSpawnedThisRound=false, redSpawnedThisRound=false, isRedRound=false;
+
+  // ---------- LEVELS ----------
+  const BASE_LEVELS = [
+    {icon:'🏖️', name:'La Playa', sky:'linear-gradient(180deg,#0a1f33,#123a4f 55%,#175467)', sea:'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)', ground:'linear-gradient(180deg,#ead9ab,#e3c592 12%,#e3c592 62%,#b9925c)', hazard:'tortugas madre', hazardType:'horizontal', hazardShape:'turtle', hazardColor:'#0f9b7d', beachBar:true},
+    {icon:'🚗', name:'Cruzar la calle', sky:'linear-gradient(180deg,#1a1f2e,#242c3d)', sea:'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)', ground:'#2b2d31', hazard:'coches, autobuses y camiones', hazardType:'horizontal', hazardShapes:['car','car','bus','truck'], hazardColor:null, hazardFast:true, hazardFreqMul:0.35, road:true},
+    {icon:'🏊', name:'La Piscina', sky:'linear-gradient(180deg,#0e2a3d,#154a5c)', sea:'linear-gradient(180deg,#0f7a9c,#1fa4c9 55%,#37c2e0)', ground:'linear-gradient(180deg,#e8ecec,#d3dbdb)', hazard:'salpicones', hazardType:'zone', hazardShape:'splash', hazardColor:'#3fb6e0', pool:true, hazardCount:3, hazardExact:true},
+    {icon:'🏝️', name:'Bajo la arena', sky:'linear-gradient(180deg,#12212b,#1c3340)', sea:'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)', ground:'linear-gradient(180deg,#e8cc98,#d1ab6e)', hazard:'cangrejos', hazardType:'horizontal', hazardShape:'crab', hazardColor:'#e05a3d', hazardFast:true, hazardCount:3, hazardExact:true, sandy:true},
+    {icon:'🌳', name:'El Jardín', sky:'linear-gradient(180deg,#0e1f16,#173626)', sea:'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)', ground:'linear-gradient(180deg,#4a9350,#356b38)', hazard:'aspersores', hazardType:'zone', hazardShape:'sprinkler', hazardColor:'#7fd4ff', garden:true, hazardCount:2},
+    {icon:'⛰️', name:'El Precipicio', sky:'linear-gradient(180deg,#1a1622,#2c2338)', sea:'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)', ground:'linear-gradient(180deg,#8a7566,#6b5a4d)', hazard:'piedras que caen', hazardType:'vertical', hazardShape:'rock', hazardColor:'#8a7566', hazardCount:2},
+    {icon:'🛒', name:'El Supermercado', sky:'linear-gradient(180deg,#1c2430,#26313f)', sea:'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)', ground:'linear-gradient(180deg,#e2e2e2,#c6c6c6)', hazard:'carritos', hazardType:'horizontal', hazardShape:'cart', hazardColor:'#c0c0c0', hazardFast:true, market:true, hazardCount:5, hazardExact:true},
+    {icon:'⚽', name:'Campo de Fútbol', sky:'linear-gradient(180deg,#0f2417,#173a24)', sea:'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)', ground:'linear-gradient(180deg,#3fae4f,#2f8a3e)', hazard:'balonazos', hazardType:'diagonal', hazardShape:'ball', hazardColor:'#f4f4f4', field:true, hazardCount:2, hazardExact:true},
+    {icon:'🏞️', name:'El Río', sky:'linear-gradient(180deg,#0f2530,#173b47)', sea:'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)', ground:'linear-gradient(180deg,#5c9a4f,#3f7a3a)', hazard:'tornados', hazardType:'horizontal', hazardShape:'tornado', hazardColor:'#8fa8b8', hazardCount:3, hazardExact:true, hazardFast:true, grass:true},
+    {icon:'🌲', name:'El Bosque', sky:'linear-gradient(180deg,#0c1a12,#132b1c)', sea:'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)', ground:'linear-gradient(180deg,#3a2c1e,#2a1f14)', hazard:'búhos', hazardType:'vertical', hazardShape:'owl', hazardColor:'#6b4a2c', hazardCount:3, hazardExact:true, forest:true}
+  ];
+  const EXTRA_BIOMES = [
+    {icon:'🏜️', name:'Desierto', hazard:'escorpiones', hue:30},
+    {icon:'🌋', name:'Volcán', hazard:'lava', hue:8},
+    {icon:'❄️', name:'Ártico', hazard:'zorros polares', hue:195},
+    {icon:'🏙️', name:'Ciudad', hazard:'tráfico', hue:220},
+    {icon:'🚀', name:'Estación Espacial', hazard:'meteoritos', hue:260},
+    {icon:'🏰', name:'Castillo', hazard:'guardias', hue:280},
+    {icon:'⛩️', name:'Templo', hazard:'trampas', hue:15},
+    {icon:'🌪️', name:'Tormenta', hazard:'rayos', hue:230},
+    {icon:'🚂', name:'Vías del Tren', hazard:'vagones', hue:20},
+    {icon:'🕳️', name:'Cueva', hazard:'murciélagos', hue:270},
+    {icon:'🏭', name:'Fábrica', hazard:'engranajes', hue:40},
+    {icon:'🎡', name:'Feria', hazard:'multitudes', hue:320},
+    {icon:'🛸', name:'Nave Alienígena', hazard:'robots', hue:140},
+    {icon:'🦈', name:'Océano Profundo', hazard:'tiburones', hue:200},
+    {icon:'🏔️', name:'Montaña Nevada', hazard:'avalanchas', hue:205},
+    {icon:'🌵', name:'Cañón', hazard:'buitres', hue:25},
+    {icon:'🏚️', name:'Pantano', hazard:'cocodrilos', hue:95},
+    {icon:'🗻', name:'Cráter Lunar', hazard:'meteoritos', hue:250},
+    {icon:'🎪', name:'Circo', hazard:'payasos', hue:340},
+    {icon:'🧊', name:'Iglú', hazard:'osos polares', hue:190}
+  ];
+  function hslShift(base, hue){
+    return base.replace(/#[0-9a-f]{6}/gi, ()=> `hsl(${hue},38%,${18+Math.floor(Math.random()*14)}%)`);
+  }
+  function buildLevels(){
+    const levels = BASE_LEVELS.map((b,i)=>({id:i+1, ...b}));
+    const TYPE_CYCLE = ['horizontal','vertical','zone','diagonal'];
+    const SHAPE_BY_TYPE = {horizontal:'blob', vertical:'rock', zone:'splash', diagonal:'ball'};
+    for(let id=11; id<=100; id++){
+      const cycle = Math.floor((id-11)/EXTRA_BIOMES.length);
+      const biome = EXTRA_BIOMES[(id-11)%EXTRA_BIOMES.length];
+      const roman = cycle>0 ? ' '+['I','II','III','IV','V'][Math.min(cycle,4)] : '';
+      const hue = (biome.hue + cycle*24) % 360;
+      const hazardType = TYPE_CYCLE[id % TYPE_CYCLE.length];
+      levels.push({
+        id, icon:biome.icon, name:biome.name+roman, hazard:biome.hazard,
+        sky:`linear-gradient(180deg, hsl(${hue},40%,10%), hsl(${hue},40%,18%))`,
+        sea:`linear-gradient(180deg, hsl(${hue},45%,22%), hsl(${hue},45%,32%))`,
+        ground:`linear-gradient(180deg, hsl(${hue},35%,45%), hsl(${hue},35%,32%))`,
+        hazardType, hazardShape:SHAPE_BY_TYPE[hazardType], hazardColor:`hsl(${hue},60%,55%)`,
+        hazardFast: (id%3===0)
+      });
+    }
+    // Ajustes especiales por BIOMA (se aplican en todos los ciclos, hasta el nivel 100)
+    const OVERRIDES_BY_BIOME = [
+      {hazardCount:2, hazardExact:true, extra:'dune', sea:'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)'}, // 0 Desierto: 2 ruedas rodadoras + dunas + mar azul
+      {hazardCount:4, hazardExact:true, extra:'volcano', sea:'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)'}, // 1 Volcán: 4 bolas de lava + mar azul + volcán
+      {extra:'mountain', ground:'linear-gradient(180deg,#eaf6fb,#cfe8f2)', sea:'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)', ice:true}, // 2 Ártico: montaña helada + suelo de hielo + mar azul
+      {extra:'city'}, // 3 Ciudad: skyline
+      {extra:'station'}, // 4 Estación Espacial: mejorada
+      {extra:'castle', hideRocks:true}, // 5 Castillo: muralla
+      {extra:'temple', hideRocks:true}, // 6 Templo: columnas
+      {extra:'storm'}, // 7 Tormenta: lluvia y rayos
+      {extra:'trainTracks', hideRocks:true}, // 8 Vías del Tren
+      {extra:'cave', hideRocks:true}, // 9 Cueva
+      {extra:'factory', hideRocks:true}, // 10 Fábrica
+      {extra:'fair', hideRocks:true}, // 11 Feria
+      {extra:'alienShip', hideRocks:true}, // 12 Nave Alienígena
+      {extra:'oceanDeep', hideRocks:true}, // 13 Océano Profundo
+      {extra:'snowMountain'}, // 14 Montaña Nevada
+      {extra:'canyon', hideRocks:true}, // 15 Cañón
+      {extra:'swamp', hideRocks:true}, // 16 Pantano
+      {extra:'crater', hideRocks:true}, // 17 Cráter Lunar
+      {extra:'circus', hideRocks:true}, // 18 Circo
+      {extra:'igloo', hideRocks:true} // 19 Iglú
+    ];
+    levels.forEach(l=>{
+      if(l.id>=11){
+        const biomeIndex = (l.id-11) % EXTRA_BIOMES.length;
+        const ov = OVERRIDES_BY_BIOME[biomeIndex];
+        if(ov) Object.assign(l, ov);
+        l.sea = 'linear-gradient(180deg,#0d3244,#124a5c 40%,#1a6478 78%,#2c8291)'; // agua azul mar en todos los escenarios
+      }
+    });
+    levels.forEach(l=>{
+      // dificultad: 1 = normal (nivel 1), baja hasta ~0.32 en el nivel 100 (mas rapido = mas dificil)
+      l.diff = Math.max(0.32, 1 - (l.id-1)*0.0069);
+    });
+    return levels;
+  }
+  const LEVELS = buildLevels();
+  let currentLevel = LEVELS[0];
+  let maxUnlockedLevel = 1;
+
+  function applyLevelTheme(level){
+    document.getElementById('sky').style.background = level.sky;
+    const seaEl = document.getElementById('sea');
+    seaEl.style.background = level.sea;
+    seaEl.classList.toggle('pool', !!level.pool);
+    const sandEl = document.getElementById('sand');
+    sandEl.style.background = level.ground;
+    sandEl.classList.toggle('road', !!level.road);
+    sandEl.classList.toggle('pool', !!level.pool);
+    sandEl.classList.toggle('sandy', !!level.sandy);
+    sandEl.classList.toggle('garden', !!level.garden);
+    sandEl.classList.toggle('market', !!level.market);
+    sandEl.classList.toggle('field', !!level.field);
+    sandEl.classList.toggle('riverbank', !!level.riverbank);
+    sandEl.classList.toggle('grass', !!level.grass);
+    sandEl.classList.toggle('forest', !!level.forest);
+    sandEl.classList.toggle('ice', !!level.ice);
+    document.getElementById('rocksLayer').style.display = (level.pool||level.garden||level.market||level.field||level.riverbank||level.forest||level.hideRocks) ? 'none' : '';
+    document.getElementById('poolDecor').style.display = level.pool ? '' : 'none';
+    document.getElementById('sandDecor').style.display = level.sandy ? '' : 'none';
+    document.getElementById('gardenDecor').style.display = level.garden ? '' : 'none';
+    document.getElementById('marketDecor').style.display = level.market ? '' : 'none';
+    document.getElementById('fieldDecor').style.display = level.field ? '' : 'none';
+    document.getElementById('forestDecor').style.display = level.forest ? '' : 'none';
+    document.getElementById('beachBarDecor').style.display = level.beachBar ? '' : 'none';
+    const extraEl = document.getElementById('extraDecor');
+    if(level.extra && EXTRA_SVGS[level.extra]){
+      extraEl.innerHTML = EXTRA_SVGS[level.extra]();
+      extraEl.style.display='';
+    } else {
+      extraEl.style.display='none';
+    }
+    const stormEl = document.getElementById('stormLayer');
+    clearTimeout(lightningTimer);
+    if(level.extra === 'storm'){
+      stormEl.style.display='';
+      scheduleLightning();
+    } else {
+      stormEl.style.display='none';
+    }
+    document.getElementById('moonpath').style.display = (level.pool || level.garden) ? 'none' : '';
+    document.getElementById('startTitle').innerHTML = level.name.split(' ')[0]+' <span>'+level.name.split(' ').slice(1).join(' ')+'</span>';
+    const unlockHint = level.id<100 ? ' Consigue '+unlockTargetScore(level.id)+' puntos para desbloquear el siguiente nivel.' : '';
+    document.getElementById('startSubtitle').textContent = (level.hazardType==='none'
+      ? 'Nivel '+level.id+' — Toca las tortuguitas antes de que escapen. Aquí no hay peligros que esquivar, ¡solo concéntrate en atraparlas!'
+      : 'Nivel '+level.id+' — Toca las tortuguitas antes de que escapen. Cuidado con '+level.hazard+': ¡si te tocan, pierdes puntos!') + unlockHint;
+    document.getElementById('adNotice').classList.remove('hidden');
+  }
+
+  function renderLevelGrid(){
+    const grid = document.getElementById('levelGrid');
+    grid.innerHTML='';
+    updateStreakUI();
+    LEVELS.forEach(level=>{
+      const unlocked = level.id <= maxUnlockedLevel;
+      const card=document.createElement('div');
+      card.className='levelCard'+(unlocked?'':' locked');
+      card.style.background='rgba(8,21,34,.55)';
+      const medalCount = unlocked ? medalCountForLevel(level.id) : 0;
+      card.innerHTML = unlocked
+        ? `<div class="lIcon">${level.icon}</div><div class="lName">${level.id}. ${level.name}</div>`+(medalCount>0?`<div style="font-size:9px; margin-top:1px;">${'🏅'.repeat(medalCount)}</div>`:'')
+        : `<div class="lIcon">🔒</div><div class="lName">${level.id}</div>`;
+      if(unlocked){
+        card.addEventListener('click', ()=>{
+          playClick();
+          currentLevel = level;
+          applyLevelTheme(level);
+          document.getElementById('levelSelectOverlay').classList.add('hidden');
+          document.getElementById('startOverlay').classList.remove('hidden');
+        });
+      }
+      grid.appendChild(card);
+    });
+  }
+  renderLevelGrid();
+
+  document.getElementById('resetGameBtn').addEventListener('click', ()=>{
+    maxUnlockedLevel = 1;
+    gamesPlayed = 0;
+    renderLevelGrid();
+  });
+
+  document.getElementById('openAlbumBtn').addEventListener('click', ()=>{
+    playClick();
+    renderAlbum();
+    document.getElementById('albumOverlay').classList.remove('hidden');
+  });
+  document.getElementById('closeAlbumBtn').addEventListener('click', ()=>{
+    playClick();
+    document.getElementById('albumOverlay').classList.add('hidden');
+  });
+
+  document.getElementById('openHighscoreBtn').addEventListener('click', ()=>{
+    playClick();
+    renderHighscoreTable();
+    document.getElementById('highscoreListOverlay').classList.remove('hidden');
+  });
+  document.getElementById('closeHighscoreBtn').addEventListener('click', ()=>{
+    playClick();
+    document.getElementById('highscoreListOverlay').classList.add('hidden');
+  });
+  document.getElementById('hsSaveBtn').addEventListener('click', ()=>{
+    playClick();
+    saveHighscoreEntry();
+  });
+  document.getElementById('hsNameInput').addEventListener('keydown', (e)=>{
+    if(e.key==='Enter'){ playClick(); saveHighscoreEntry(); }
+  });
+
+  document.getElementById('backToLevelsBtn').addEventListener('click', ()=>{
+    document.getElementById('startOverlay').classList.add('hidden');
+    document.getElementById('levelSelectOverlay').classList.remove('hidden');
+  });
+  function startGame(){
+    document.getElementById('startOverlay').classList.add('hidden');
+    document.getElementById('overOverlay').classList.add('hidden');
+    setScore(0);
+    timeLeft=60;
+    gamesPlayed++;
+    isRedRound = (gamesPlayed % 10 === 0);
+    goldSpawnedThisRound=false;
+    redSpawnedThisRound=false;
+    pendingGoldSpawn=false;
+    pendingRedSpawn=false;
+    normalCatches=0;
+    hitsTaken=0;
+    maxComboThisRound=0;
+    timeEl.textContent=timeLeft;
+    timeEl.classList.remove('low');
+    running=true;
+    loopSpawns();
+    tickInterval=setInterval(()=>{
+      timeLeft--;
+      timeEl.textContent=timeLeft;
+      if(timeLeft<=10) timeEl.classList.add('low');
+      if(timeLeft===10 && !goldSpawnedThisRound && !redSpawnedThisRound){
+        if(isRedRound){
+          redSpawnedThisRound=true;
+          pendingRedSpawn=true; // partida especial: tortuga roja -> ruleta
+        } else {
+          goldSpawnedThisRound=true;
+          pendingGoldSpawn=true; // partida normal: dorada -> premio fijo 0,23€
+        }
+      }
+      if(timeLeft<=0){ endGame(); }
+    },1000);
+  }
+  function unlockTargetScore(levelId){
+    return Math.ceil((levelId+1)/10)*100; // niveles 1-9: 100 para avanzar · nivel 10: 200 · niveles 11-19: 200 · nivel 20: 300 ... y así sucesivamente
+  }
+  function meetsUnlockRequirement(level, finalScore){
+    return finalScore >= unlockTargetScore(level.id);
+  }
+  function endGame(){
+    running=false;
+    clearInterval(tickInterval);
+    clearAllCritters();
+    evaluateMedals();
+    let unlockedNext = false;
+    if(currentLevel.id === maxUnlockedLevel && maxUnlockedLevel < 100 && meetsUnlockRequirement(currentLevel, score)){
+      maxUnlockedLevel++;
+      unlockedNext = true;
+    }
+    renderLevelGrid();
+    document.getElementById('finalScore').textContent=score;
+    const overSubtitle = document.querySelector('#overOverlay .subtitle');
+    if(overSubtitle){
+      if(currentLevel.id === maxUnlockedLevel-1 && !unlockedNext){
+        overSubtitle.textContent = 'Puntuación final — necesitas '+unlockTargetScore(currentLevel.id)+' puntos para desbloquear el siguiente';
+      } else if(unlockedNext){
+        overSubtitle.textContent = '¡Siguiente nivel desbloqueado! Puntuación final';
+      } else {
+        overSubtitle.textContent = 'Puntuación final';
+      }
+    }
+    if(qualifiesForHighscore(score)){
+      showHighscoreEntry();
+    } else {
+      document.getElementById('overOverlay').classList.remove('hidden');
+    }
+  }
+
+  document.getElementById('soundToggle').addEventListener('click', ()=>{
+    soundEnabled = !soundEnabled;
+    document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+    if(soundEnabled) playClick();
+  });
+
+  document.getElementById('startBtn').addEventListener('click', ()=>{ playClick(); startGame(); });
+  document.getElementById('restartBtn').addEventListener('click', ()=>{
+    document.getElementById('overOverlay').classList.add('hidden');
+    document.getElementById('levelSelectOverlay').classList.remove('hidden');
+  });
+
+  // ---------- ROULETTE (solo puntos) ----------
+  const pointPrizes = [
+    {label:'10 pts', value:10, weight:32, color:'#d9c48a'},
+    {label:'20 pts', value:20, weight:24, color:'#e3c592'},
+    {label:'30 pts', value:30, weight:16, color:'#57ffc9'},
+    {label:'50 pts', value:50, weight:11, color:'#7fe6c4'},
+    {label:'75 pts', value:75, weight:8,  color:'#ffd166'},
+    {label:'100 pts',value:100,weight:5,  color:'#ffb347'},
+    {label:'150 pts',value:150,weight:2.6,color:'#ff8c5a'},
+    {label:'250 pts',value:250,weight:1.2,color:'#ff6f52'},
+    {label:'500 pts',value:500,weight:0.2,color:'#ff3b3b'}
+  ];
+  const activePrizes = pointPrizes;
+  const totalWeight = activePrizes.reduce((a,p)=>a+p.weight,0);
+  const wheel = document.getElementById('wheel');
+  const segAngle = 360/activePrizes.length;
+  function buildWheelSegments(prizeSet){
+    wheel.innerHTML='';
+    prizeSet.forEach((p,i)=>{
+      const seg=document.createElement('div');
+      seg.className='seg';
+      seg.style.transform=`rotate(${i*segAngle}deg)`;
+      seg.style.background=p.color;
+      seg.style.clipPath='polygon(0% 0%, 100% 0%, 100% 100%)';
+      const label=document.createElement('div');
+      label.className='segLabel';
+      label.style.transform=`rotate(${segAngle/2}deg)`;
+      label.textContent=p.label;
+      seg.appendChild(label);
+      wheel.appendChild(seg);
+    });
+  }
+  buildWheelSegments(activePrizes);
+
+  let spinsLeft=0, wheelRotation=0, spinning=false;
+  const rOverlay=document.getElementById('rouletteOverlay');
+  const spinBtn=document.getElementById('spinBtn');
+  const spinsLeftEl=document.getElementById('spinsLeft');
+  const prizeToast=document.getElementById('prizeToast');
+  const closeBtn=document.getElementById('closeRouletteBtn');
+  const rSub=document.getElementById('rSub');
+
+  function openRoulette(){
+    running=false; // pause catching while roulette open (spawns keep queued but harmless)
+    clearAllCritters();
+    wheelRotation = 0;
+    wheel.style.transition='none';
+    wheel.style.transform='rotate(0deg)';
+    requestAnimationFrame(()=>{ wheel.style.transition=''; });
+    spinsLeft = (1 + Math.floor(Math.random()*7)); // 1 a 7 giros
+    let bonusMsg = '';
+    if(streakData.bonusSpinAvailable){
+      spinsLeft += 1;
+      streakData.bonusSpinAvailable = false;
+      saveStreakData();
+      bonusMsg = ' 🔥 ¡+1 giro extra por tu racha diaria!';
+    }
+    prizeToast.textContent='';
+    closeBtn.classList.add('hidden');
+    spinBtn.classList.remove('hidden');
+    document.getElementById('wheelWrap').classList.remove('hidden');
+    rSub.textContent = 'Gira la ruleta de la luna'+bonusMsg;
+    spinsLeftEl.textContent = 'Giros disponibles: '+spinsLeft;
+    rOverlay.classList.remove('hidden');
+  }
+
+  function weightedPick(){
+    let r = Math.random()*totalWeight;
+    for(const p of activePrizes){
+      if(r<p.weight) return p;
+      r-=p.weight;
+    }
+    return activePrizes[0];
+  }
+
+  spinBtn.addEventListener('click', ()=>{
+    if(spinning || spinsLeft<=0) return;
+    spinning=true;
+    spinBtn.disabled=true;
+    prizeToast.textContent='';
+    const chosen = weightedPick();
+    const idx = activePrizes.indexOf(chosen);
+    const targetCenter = idx*segAngle + segAngle/2;
+    const spins = 4 + Math.floor(Math.random()*3);
+    const finalRotation = wheelRotation - (wheelRotation % 360) + spins*360 + (360-targetCenter);
+    wheelRotation = finalRotation;
+    wheel.style.transform = `rotate(${wheelRotation}deg)`;
+
+    setTimeout(()=>{
+      spinning=false;
+      spinsLeft--;
+      spinBtn.disabled=false;
+      const isJackpot = chosen.value>=500;
+      prizeToast.textContent = (isJackpot?'🎉 JACKPOT 🎉 ':'¡Ganaste ')+chosen.label+(isJackpot?'':'!');
+      playPrize();
+      setScore(score + chosen.value);
+      spinsLeftEl.textContent = spinsLeft>0 ? ('Giros disponibles: '+spinsLeft) : 'Sin giros restantes';
+      if(spinsLeft<=0){
+        spinBtn.classList.add('hidden');
+        closeBtn.classList.remove('hidden');
+      }
+    },4300);
+  });
+
+  closeBtn.addEventListener('click', ()=>{
+    rOverlay.classList.add('hidden');
+    running=true;
+    loopSpawns();
+  });
+
+})();
+</script>
+</body>
+</html>
