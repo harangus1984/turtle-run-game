@@ -1,0 +1,12 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Turtle Run: Beach Rescue",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Turtle Run",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "description": "Rescue baby turtles across 100 wild scenes"
+}
