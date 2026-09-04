@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><link rel="manifest" href="manifest.json">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Noche de Tortugas</title>
@@ -369,6 +369,7 @@
   <!-- HIGHSCORE: tabla -->
   <div class="overlay hidden" id="highscoreListOverlay">
     <div class="title" style="font-size:26px;">Mejores <span>puntuaciones</span></div>
+    <div class="subtitle" id="hsAutoHint" style="display:none;">Esta pantalla se cerrará sola en unos segundos…</div>
     <div id="highscoreTable" style="width:min(88%,320px); margin:10px 0 18px; display:flex; flex-direction:column; gap:8px;"></div>
     <button class="btn ghost" id="closeHighscoreBtn">Cerrar</button>
   </div>
@@ -1304,8 +1305,8 @@
     return MEDAL_DEFS.filter(m=>owned[m.id]).length;
   }
 
-  // ---------- MARCADOR DE MEJORES PUNTUACIONES (1 a 6 jugadores) ----------
-  const HIGHSCORE_MAX = 6;
+  // ---------- MARCADOR DE MEJORES PUNTUACIONES (1 a 7 jugadores) ----------
+  const HIGHSCORE_MAX = 7;
   let highscores = [];
   function loadHighscores(){
     try{
@@ -1336,7 +1337,24 @@
     highscores = highscores.slice(0,HIGHSCORE_MAX);
     saveHighscores();
     document.getElementById('highscoreEntryOverlay').classList.add('hidden');
-    document.getElementById('overOverlay').classList.remove('hidden');
+    showHighscoreAutoTable();
+  }
+
+  // Muestra automáticamente la tabla de los 7 mejores durante 7 segundos
+  // y después pasa a la pantalla de fin de partida.
+  let hsAutoTimer = null;
+  let hsAutoTableActive = false;
+  function showHighscoreAutoTable(){
+    renderHighscoreTable();
+    hsAutoTableActive = true;
+    document.getElementById('hsAutoHint').style.display='block';
+    document.getElementById('highscoreListOverlay').classList.remove('hidden');
+    hsAutoTimer = setTimeout(()=>{
+      hsAutoTableActive = false;
+      document.getElementById('hsAutoHint').style.display='none';
+      document.getElementById('highscoreListOverlay').classList.add('hidden');
+      document.getElementById('overOverlay').classList.remove('hidden');
+    }, 7000);
   }
   function renderHighscoreTable(){
     const wrap = document.getElementById('highscoreTable');
@@ -1811,7 +1829,17 @@
   }
   const LEVELS = buildLevels();
   let currentLevel = LEVELS[0];
-  let maxUnlockedLevel = 1;
+  function loadMaxUnlockedLevel(){
+    try{
+      const raw = localStorage.getItem('tortugas_maxUnlockedLevel');
+      const v = raw ? parseInt(raw,10) : 1;
+      return (v>=1 && v<=100) ? v : 1;
+    }catch(e){ return 1; }
+  }
+  function saveMaxUnlockedLevel(){
+    try{ localStorage.setItem('tortugas_maxUnlockedLevel', String(maxUnlockedLevel)); }catch(e){}
+  }
+  let maxUnlockedLevel = loadMaxUnlockedLevel();
 
   function applyLevelTheme(level){
     document.getElementById('sky').style.background = level.sky;
@@ -1891,6 +1919,7 @@
 
   document.getElementById('resetGameBtn').addEventListener('click', ()=>{
     maxUnlockedLevel = 1;
+    saveMaxUnlockedLevel();
     gamesPlayed = 0;
     renderLevelGrid();
   });
@@ -1913,6 +1942,12 @@
   document.getElementById('closeHighscoreBtn').addEventListener('click', ()=>{
     playClick();
     document.getElementById('highscoreListOverlay').classList.add('hidden');
+    document.getElementById('hsAutoHint').style.display='none';
+    if(hsAutoTableActive){
+      clearTimeout(hsAutoTimer);
+      hsAutoTableActive = false;
+      document.getElementById('overOverlay').classList.remove('hidden');
+    }
   });
   document.getElementById('hsSaveBtn').addEventListener('click', ()=>{
     playClick();
@@ -1975,6 +2010,7 @@
     if(currentLevel.id === maxUnlockedLevel && maxUnlockedLevel < 100 && meetsUnlockRequirement(currentLevel, score)){
       maxUnlockedLevel++;
       unlockedNext = true;
+      saveMaxUnlockedLevel();
     }
     renderLevelGrid();
     document.getElementById('finalScore').textContent=score;
@@ -1991,7 +2027,7 @@
     if(qualifiesForHighscore(score)){
       showHighscoreEntry();
     } else {
-      document.getElementById('overOverlay').classList.remove('hidden');
+      showHighscoreAutoTable();
     }
   }
 
